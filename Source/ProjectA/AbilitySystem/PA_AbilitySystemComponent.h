@@ -6,9 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "PA_AbilitySystemComponent.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTA_API UPA_AbilitySystemComponent : public UAbilitySystemComponent
 {
