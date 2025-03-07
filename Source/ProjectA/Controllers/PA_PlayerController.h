@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "PA_PlayerController.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
 class PROJECTA_API APA_PlayerController : public APlayerController
 {

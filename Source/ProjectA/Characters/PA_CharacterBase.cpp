@@ -3,69 +3,32 @@
 
 #include "Characters/PA_CharacterBase.h"
 
-#include "AbilitySystem/PA_AbilitySystemComponent.h"
-#include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
-
-#include "DataAssets/StartUpData/DA_BaseStartUpData.h"
-
+// Sets default values
 APA_CharacterBase::APA_CharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-
-	GetMesh()->bReceivesDecals = false;
-
-	AbilitySystemComponent = CreateDefaultSubobject<UPA_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-
-	AttributeSet = CreateDefaultSubobject<UPA_AttributeSetBase>(TEXT("AttributeSet"));
-}
-
-void APA_CharacterBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 
+// Called when the game starts or when spawned
 void APA_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-UAbilitySystemComponent* APA_CharacterBase::GetAbilitySystemComponent() const
+// Called every frame
+void APA_CharacterBase::Tick(float DeltaTime)
 {
-	if (AbilitySystemComponent)
-	{
-		return AbilitySystemComponent;
-	}
-	return nullptr;
+	Super::Tick(DeltaTime);
+
 }
 
-bool APA_CharacterBase::ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> Effect, FGameplayEffectContextHandle InEffectContextHandle)
+// Called to bind functionality to input
+void APA_CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (!Effect.Get()) return false;
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1, InEffectContextHandle);
-	if (SpecHandle.IsValid())
-	{
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		return ActiveGEHandle.WasSuccessfullyApplied();
-	}
-
-	return false;
 }
 
-void APA_CharacterBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-}
-
-void APA_CharacterBase::GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties)
-{
-}
-
-void APA_CharacterBase::ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects)
-{
-}
