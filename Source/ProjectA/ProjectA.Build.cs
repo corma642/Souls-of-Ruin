@@ -17,7 +17,8 @@ public class ProjectA : ModuleRules
             "GameplayAbilities",
             "GameplayTags",
             "GameplayTasks",
-            "MotionWarping"
+            "MotionWarping",
+            "AnimGraphRuntime",
         });
     }
 }

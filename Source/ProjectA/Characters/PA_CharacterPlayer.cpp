@@ -24,7 +24,7 @@
 
 APA_CharacterPlayer::APA_CharacterPlayer()
 {
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(38.f, 82.0f);
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -32,7 +32,7 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->GroundFriction = 4.f;
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
@@ -42,12 +42,12 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->SetRelativeRotation(FRotator(-40.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 600.f;
+	SpringArm->TargetArmLength = 1000.f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = true;
 	SpringArm->bInheritYaw = true;
-	SpringArm->bDoCollisionTest = true;
+	SpringArm->bDoCollisionTest = false;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -113,11 +113,28 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	{
 		// 이동
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
+	
+		// 카메라 이동
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
 	}
 }
 
 void APA_CharacterPlayer::OnMove(const FInputActionValue& InputActionValue)
 {
+	FVector2D AxisValue = InputActionValue.Get<FVector2D>();
+	const FRotator Rotation = GetControlRotation();
+
+	const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(ForwardDirection, AxisValue.X);
+	AddMovementInput(RightDirection, AxisValue.Y);
+}
+
+void APA_CharacterPlayer::OnLook(const FInputActionValue& InputActionValue)
+{
+	float AxisValue = InputActionValue.Get<float>();
+	Controller->SetControlRotation(Controller->GetControlRotation() + FRotator(0.f, AxisValue, 0.f));
 }
 
 void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties)

@@ -36,12 +36,18 @@ private:
 	// 이동 함수
 	void OnMove(const FInputActionValue& InputActionValue);
 
+	// 카메라 이동 함수
+	void OnLook(const FInputActionValue& InputActionValue);
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> MoveAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> LookAction;
 
 
 	///////////////////////////////////////////////////////////////////////////
