@@ -39,6 +39,9 @@ private:
 	// 카메라 이동 함수
 	void OnLook(const FInputActionValue& InputActionValue);
 
+	// 카메라 확대 축소 함수
+	void OnCameraZoom(const FInputActionValue& InputActionValue);
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
@@ -48,6 +51,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> LookAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> CameraZoomAction;
 
 
 	///////////////////////////////////////////////////////////////////////////

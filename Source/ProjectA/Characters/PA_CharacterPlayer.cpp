@@ -112,10 +112,22 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// 이동
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
+		if (MoveAction)
+		{
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
+		}
 	
 		// 카메라 이동
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
+		if (LookAction)
+		{
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
+		}
+
+		// 카메라 확대 축소
+		if (LookAction)
+		{
+			EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnCameraZoom);
+		}
 	}
 }
 
@@ -135,6 +147,14 @@ void APA_CharacterPlayer::OnLook(const FInputActionValue& InputActionValue)
 {
 	float AxisValue = InputActionValue.Get<float>();
 	Controller->SetControlRotation(Controller->GetControlRotation() + FRotator(0.f, AxisValue, 0.f));
+}
+
+void APA_CharacterPlayer::OnCameraZoom(const FInputActionValue& InputActionValue)
+{
+	float AxisValue = -InputActionValue.Get<float>();
+
+	float ZoomValue = FMath::Clamp((SpringArm->TargetArmLength + AxisValue * 500.f), 400.f, 1000.f);
+	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ZoomValue, GetWorld()->GetDeltaSeconds(), 10.f);
 }
 
 void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties)
