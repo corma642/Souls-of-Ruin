@@ -5,6 +5,9 @@
 namespace PA_GameplayTags
 {
 	/* Ability Tags */
-	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Movement_InAir_Jump);
+
+
+	/* Event Tags */
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Start_SpawnWeapon);
 
 }

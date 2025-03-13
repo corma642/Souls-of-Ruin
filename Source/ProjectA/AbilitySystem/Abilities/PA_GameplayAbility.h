@@ -24,14 +24,14 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	class APA_CharacterEnemy* GetEnemyCharacterFromActorInfo() const;
 
+	// 시작 후 계속 적용되는 이펙트
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TArray<TSubclassOf<UGameplayEffect>> OngoingEffectsToJustApplyOnStart;
+
 	// 효과가 끝나면 제거되는 이펙트
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TArray<TSubclassOf<UGameplayEffect>> OngoingEffectsToRemoveOnEnd;
 
 	// 효과가 끝나면 제거되는 이펙트 핸들
 	TArray<FActiveGameplayEffectHandle> RemoveOnEndEffectHandles;
-
-	// 시작 후 계속 적용되는 이펙트
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TArray<TSubclassOf<UGameplayEffect>> OngoingEffectsToJustApplyOnStart;
 };

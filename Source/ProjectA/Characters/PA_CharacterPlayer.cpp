@@ -2,17 +2,14 @@
 
 
 #include "Characters/PA_CharacterPlayer.h"
-
 #include "Camera/CameraComponent.h"
-
 #include "Components/CapsuleComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 
 #include "DataAssets/StartUpData/DA_BaseStartUpData.h"
 
@@ -21,6 +18,7 @@
 #include "ProjectATypes/PA_EnumTypes.h"
 
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 APA_CharacterPlayer::APA_CharacterPlayer()
 {
@@ -57,6 +55,15 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 void APA_CharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 시작 어빌리티 활성화
+	for (const auto& StartActivateEventTag : StartActivateEventTags)
+	{
+		FGameplayEventData Payload;
+		Payload.EventTag = StartActivateEventTag;
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StartActivateEventTag, Payload);
+	}
 }
 
 void APA_CharacterPlayer::PossessedBy(AController* NewController)

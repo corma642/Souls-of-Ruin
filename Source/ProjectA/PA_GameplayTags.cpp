@@ -4,6 +4,9 @@
 namespace PA_GameplayTags
 {
 	/* Ability Tags */
-	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_InAir_Jump, "Ability.Movement.InAir.Jump");
+
+
+	/* Event Tags */
+	UE_DEFINE_GAMEPLAY_TAG(Event_Start_SpawnWeapon, "Event.Start.SpawnWeapon");
 
 }

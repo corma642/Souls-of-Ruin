@@ -50,4 +50,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | StartUpData")
 	TSoftObjectPtr<class UDA_BaseStartUpData> CharacterStartUpData;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Gameplay Event Tags */
+protected:
+	// 시작 시 활성화할 이벤트 태그
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | StartUpData")
+	TArray<FGameplayTag> StartActivateEventTags;
 };
