@@ -8,5 +8,7 @@ namespace PA_GameplayTags
 
 	/* Event Tags */
 	UE_DEFINE_GAMEPLAY_TAG(Event_Start_SpawnWeapon, "Event.Start.SpawnWeapon");
+	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_Equip, "Event.Weapon.Equip");
+	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_UnEquip, "Event.Weapon.UnEquip");
 
 }
