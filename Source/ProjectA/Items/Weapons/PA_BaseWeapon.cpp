@@ -13,6 +13,7 @@ APA_BaseWeapon::APA_BaseWeapon()
 	LeftWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftWeaponMesh"));
 	LeftWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	LeftWeaponMesh->SetupAttachment(GetRootComponent());
+	LeftWeaponMesh->bReceivesDecals = false;
 
 	// 왼쪽 콜리전 박스
 	LeftWeaponCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftWeaponCollisionBox"));
@@ -27,6 +28,7 @@ APA_BaseWeapon::APA_BaseWeapon()
 	RightWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightWeaponMesh"));
 	RightWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RightWeaponMesh->SetupAttachment(GetRootComponent());
+	RightWeaponMesh->bReceivesDecals = false;
 
 	// 오른쪽 콜리전 박스
 	RightWeaponCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("RightWeaponCollisionBox"));

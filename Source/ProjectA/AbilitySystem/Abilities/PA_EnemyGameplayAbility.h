@@ -6,9 +6,6 @@
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
 #include "PA_EnemyGameplayAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTA_API UPA_EnemyGameplayAbility : public UPA_GameplayAbility
 {

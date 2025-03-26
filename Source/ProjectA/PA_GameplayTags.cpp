@@ -3,14 +3,16 @@
 
 namespace PA_GameplayTags
 {
-	/* Ability Tags */
+	/* Player Tags */
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Sprint, "Player.Ability.Sprint");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_DualWield, "Player.Ability.Equip.DualWield");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_UnEquip_DualWield, "Player.Ability.UnEquip.DualWield");
 
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Equip_DualWield, "Player.Event.Equip.DualWield");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_UnEquip_DualWield, "Player.Event.UnEquip.DualWield");
 
-	/* Event Tags */
-	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_Equip, "Event.Weapon.Equip");
-	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_UnEquip, "Event.Weapon.UnEquip");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_DualWield, "Player.Weapon.DualWield");
 
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Sprint, "Player.Status.Sprint");
 
-	/* Weapon Tags */
-	UE_DEFINE_GAMEPLAY_TAG(Weapon_DualWield, "Weapon.DualWield");
 }

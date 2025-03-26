@@ -4,14 +4,16 @@
 
 namespace PA_GameplayTags
 {
-	/* Ability Tags */
+	/* Player Tags */
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_Sprint);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_Equip_DualWield);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Ability_UnEquip_DualWield);
 
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_Equip_DualWield);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Event_UnEquip_DualWield);
 
-	/* Event Tags */
-	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Equip);
-	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_UnEquip);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Weapon_DualWield);
 
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Sprint);
 
-	/* Weapon Tags */
-	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_DualWield);
 }

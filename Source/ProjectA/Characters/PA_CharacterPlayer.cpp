@@ -21,6 +21,7 @@
 
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
 
 APA_CharacterPlayer::APA_CharacterPlayer()
 {
@@ -55,6 +56,9 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 
 	// 전투 컴포넌트
 	PlayerCombatComponent = CreateDefaultSubobject<UPA_PlayerCombatComponent>(TEXT("PlayerCombatComponent"));
+
+	// 최대 이동속도 변경 콜백 함수 바인딩
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterPlayer::OnMaxMovementSpeedChanged);
 }
 
 UPA_PawnCombatComponent* APA_CharacterPlayer::GetPawnCombatComponent() const
@@ -76,33 +80,11 @@ void APA_CharacterPlayer::PossessedBy(AController* NewController)
 	{
 		if (UDA_BaseStartUpData* BaseStartUpData = CharacterStartUpData.LoadSynchronous())
 		{
-			int32 AbilityApplyLevel = 1;
-
-			if (APA_GameModeBase* BaseGameMode = GetWorld()->GetAuthGameMode<APA_GameModeBase>())
-			{
-				switch (BaseGameMode->GetCurrentGameDifficulty())
-				{
-				case EPA_GameDifficulty::Easy:		// 쉬움
-					AbilityApplyLevel = 4; break;
-
-				case EPA_GameDifficulty::Normal:	// 보통
-					AbilityApplyLevel = 3; break;
-
-				case EPA_GameDifficulty::Hard:		// 어려움
-					AbilityApplyLevel = 2; break;
-
-				case EPA_GameDifficulty::VeryHard:	// 매우 어려움
-					AbilityApplyLevel = 1; break;
-
-				default: break;
-				}
-			}
-
 			// 시작 시 부여 및 활성화(OnGive) 어빌리티 부여
-			GiveStartUpAbilities(BaseStartUpData->ActivateOnGiveAbilities, AbilityApplyLevel);
+			GiveStartUpAbilities(BaseStartUpData->ActivateOnGiveAbilities);
 
 			// 시작 시 부여(OnTriggered) 어빌리티 부여
-			GiveStartUpAbilities(BaseStartUpData->ReactiveAbilities, AbilityApplyLevel);
+			GiveStartUpAbilities(BaseStartUpData->ReactiveAbilities);
 
 			// 기본 캐릭터 시작 게임플레이 이펙트 적용
 			ApplyStartUpEffects(BaseStartUpData->StartUpEffects);
@@ -129,16 +111,29 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
 		}
 
-		// 카메라 이동
+		// 카메라 회전
 		if (LookAction)
 		{
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
 		}
 
-		// 카메라 확대 축소
+		// 카메라 줌 인-아웃
 		if (LookAction)
 		{
 			EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnCameraZoom);
+		}
+
+		// 달리기 어빌리티
+		if (SprintAction)
+		{
+			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APA_CharacterPlayer::OnSprintStarted);
+			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APA_CharacterPlayer::OnSprintEnded);
+		}
+
+		// 무기 장착 어빌리티
+		if (EquipWeaponAction)
+		{
+			EnhancedInputComponent->BindAction(EquipWeaponAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnEquipWeapon);
 		}
 	}
 }
@@ -169,7 +164,22 @@ void APA_CharacterPlayer::OnCameraZoom(const FInputActionValue& InputActionValue
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ZoomValue, GetWorld()->GetDeltaSeconds(), 10.f);
 }
 
-void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties, int32 ApplyLevel)
+void APA_CharacterPlayer::OnSprintStarted(const FInputActionValue& InputActionValue)
+{
+	AbilitySystemComponent->TryActivateAbilitiesByTag(SprintTags, true);
+}
+
+void APA_CharacterPlayer::OnSprintEnded(const FInputActionValue& InputActionValue)
+{
+	AbilitySystemComponent->CancelAbilities(&SprintTags);
+}
+
+void APA_CharacterPlayer::OnEquipWeapon(const FInputActionValue& InputActionValue)
+{
+
+}
+
+void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties)
 {
 	for (auto Ability : StartUpAbilties)
 	{
@@ -177,7 +187,7 @@ void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_Game
 		{
 			FGameplayAbilitySpec AbilitySpec(Ability);
 			AbilitySpec.SourceObject = this;
-			AbilitySpec.Level = ApplyLevel;
+			AbilitySpec.Level = 1;
 
 			AbilitySystemComponent->GiveAbility(AbilitySpec);
 		}
@@ -193,4 +203,10 @@ void APA_CharacterPlayer::ApplyStartUpEffects(const TArray<TSubclassOf<UGameplay
 	{
 		ApplyGameplayEffectToSelf(StartUpEffect, EffectContext);
 	}
+}
+
+void APA_CharacterPlayer::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	// 전달받은 최대 이동속도로 갱신
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }

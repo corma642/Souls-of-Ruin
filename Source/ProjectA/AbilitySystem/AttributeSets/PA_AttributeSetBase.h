@@ -23,11 +23,28 @@ public:
 
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute | Health")
+	// 현재 체력
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
 	FGameplayAttributeData CurrentHealth;
 	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, CurrentHealth)
 
-	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute | Health")
+	// 최대 체력
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, MaxHealth)
+
+	// 현재 스태미나(기력)
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData CurrentStamina;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, CurrentStamina)
+
+	// 최대 스태미나(기력)
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData MaxStamina;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, MaxStamina)
+
+	// 최대 이동속도
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData MaxMovementSpeed;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, MaxMovementSpeed)
 };

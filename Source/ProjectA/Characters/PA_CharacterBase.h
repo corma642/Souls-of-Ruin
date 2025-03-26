@@ -43,7 +43,7 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 
 	// 기본 캐릭터 시작 어빌리티 부여 함수
-	virtual void GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties, int32 ApplyLevel = 1);
+	virtual void GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties);
 
 	// 기본 캐릭터 시작 게임플레이 이펙트 적용 함수
 	virtual void ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects);
@@ -57,10 +57,4 @@ protected:
 	// 캐릭터 시작 어빌리티 약 참조 데이터
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | StartUpData")
 	TSoftObjectPtr<class UDA_BaseStartUpData> CharacterStartUpData;
-
-
-	///////////////////////////////////////////////////////////////////////////
-	/* Gameplay Event Tags */
-protected:
-
 };

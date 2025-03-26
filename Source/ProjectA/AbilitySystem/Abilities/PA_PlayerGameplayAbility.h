@@ -6,12 +6,28 @@
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
 #include "PA_PlayerGameplayAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTA_API UPA_PlayerGameplayAbility : public UPA_GameplayAbility
 {
 	GENERATED_BODY()
 	
+public:
+	// 플레이어 캐릭터 가져오기
+	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
+	class APA_CharacterPlayer* GetPlayerCharacterFromActorInfo();
+
+	// 플레이어 컨트롤러 가져오기
+	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
+	class APA_PlayerController* GetPlayerControllerFromActorInfo();
+
+	// 플레이어 전투 컴포넌트 가져오기
+	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
+	class UPA_PlayerCombatComponent* GetPlayerCombatComponentFromActorInfo();
+
+private:
+	// 플레이어 캐릭터 캐시 데이터
+	TWeakObjectPtr<class APA_CharacterPlayer> CachedPlayerCharacter;
+
+	// 플레이어 컨트롤러 캐시 데이터
+	TWeakObjectPtr<class APA_PlayerController> CachedPlayerController;
 };
