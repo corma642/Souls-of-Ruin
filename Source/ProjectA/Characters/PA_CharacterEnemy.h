@@ -10,5 +10,18 @@ UCLASS()
 class PROJECTA_API APA_CharacterEnemy : public APA_CharacterBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	APA_CharacterEnemy();
+
+	/* ICombatInterface Interface */
+	// 전투 컴포넌트 가져오기 인터페이스 함수
+	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
+	/* ICombatInterface Interface */
+
+private:
+	// 적 전투 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPA_EnemyCombatComponent> EnemyCombatComponent;
+
 };

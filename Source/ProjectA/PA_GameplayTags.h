@@ -8,8 +8,10 @@ namespace PA_GameplayTags
 
 
 	/* Event Tags */
-	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Start_SpawnWeapon);
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Equip);
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_UnEquip);
 
+
+	/* Weapon Tags */
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_DualWield);
 }

@@ -10,24 +10,40 @@ UCLASS()
 class PROJECTA_API APA_BaseWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	APA_BaseWeapon();
 
-	FORCEINLINE class UBoxComponent* GetWeaponCollisionBox() const { return WeaponCollisionBox; }
+	FORCEINLINE class UBoxComponent* GetLeftWeaponCollisionBox() const { return LeftWeaponCollisionBox; }
+	FORCEINLINE class UBoxComponent* GetRightWeaponCollisionBox() const { return RightWeaponCollisionBox; }
 
+	/* 왼쪽 무기 */
 protected:
 	UFUNCTION()
-	void OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
-	TObjectPtr<class UStaticMeshComponent> WeaponMesh = nullptr;
+	TObjectPtr<class UStaticMeshComponent> LeftWeaponMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
-	TObjectPtr<class UBoxComponent> WeaponCollisionBox;
+	TObjectPtr<class UBoxComponent> LeftWeaponCollisionBox;
 
+
+	/* 오른쪽 무기 */
+protected:
+	UFUNCTION()
+	void OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	TObjectPtr<class UStaticMeshComponent> RightWeaponMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	TObjectPtr<class UBoxComponent> RightWeaponCollisionBox;
 
 };

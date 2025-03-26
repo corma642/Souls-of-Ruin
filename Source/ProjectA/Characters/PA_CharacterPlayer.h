@@ -11,9 +11,14 @@ UCLASS()
 class PROJECTA_API APA_CharacterPlayer : public APA_CharacterBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	APA_CharacterPlayer();
+
+	/* ICombatInterface Interface */
+	// 전투 컴포넌트 가져오기 인터페이스 함수
+	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
+	/* ICombatInterface Interface */
 
 protected:
 	virtual void BeginPlay();
@@ -25,6 +30,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> SpringArm;
+
+	// 플레이어 전투 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPA_PlayerCombatComponent> PlayerCombatComponent;
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -60,8 +69,9 @@ private:
 	/* AbilitySystem */
 protected:
 	// 기본 캐릭터 시작 어빌리티 부여 함수
-	virtual void GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties) override;
+	virtual void GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties, int32 ApplyLevel = 1) override;
 
 	// 기본 캐릭터 시작 게임플레이 이펙트 적용 함수
 	virtual void ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects) override;
+
 };

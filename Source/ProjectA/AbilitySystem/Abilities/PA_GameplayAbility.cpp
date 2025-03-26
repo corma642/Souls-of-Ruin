@@ -3,72 +3,45 @@
 
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
 #include "AbilitySystemComponent.h"
-#include "Characters/PA_CharacterPlayer.h"
-#include "Characters/PA_CharacterEnemy.h"
+#include "Interface/PawnCombatInterface.h"
 
-void UPA_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+#include "PA_FunctionLibrary.h"
+
+void UPA_GameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	Super::OnGiveAbility(ActorInfo, Spec);
 
-	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-
-	// 시작 후 계속 적용되는 이펙트 적용
-	for (auto Effect : OngoingEffectsToJustApplyOnStart)
+	if (AbilityActivationPolicy == EAbilityActivationPolicy::OnGiven)
 	{
-		if (!Effect.Get()) continue;
-
-		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Effect, 1, EffectContext);
-		if (SpecHandle.IsValid())
+		if (ActorInfo && !Spec.IsActive())
 		{
-			FActiveGameplayEffectHandle ActiveGEHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-
-	// 효과가 끝나면 제거되는 이펙트 적용
-	if (IsInstantiated())
-	{
-		for (auto Effect : OngoingEffectsToRemoveOnEnd)
-		{
-			if (!Effect.Get()) continue;
-
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Effect, 1, EffectContext);
-			if (SpecHandle.IsValid())
-			{
-				FActiveGameplayEffectHandle ActiveGEHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-				if (ActiveGEHandle.WasSuccessfullyApplied())
-				{
-					RemoveOnEndEffectHandles.Add(ActiveGEHandle);
-				}
-			}
+			// 어빌리티를 부여받자마자 활성화
+			ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle);
 		}
 	}
 }
 
 void UPA_GameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	// 효과가 끝나면 제거되는 이펙트 제거
-	if (IsInstantiated())
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	if (AbilityActivationPolicy == EAbilityActivationPolicy::OnGiven)
 	{
-		for (FActiveGameplayEffectHandle ActiveEffectHandle : RemoveOnEndEffectHandles)
+		if (ActorInfo)
 		{
-			if (ActiveEffectHandle.IsValid())
-			{
-				ActorInfo->AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveEffectHandle);
-			}
+			// 활성화했던 어빌리티 제거
+			ActorInfo->AbilitySystemComponent->ClearAbility(Handle);
 		}
-		RemoveOnEndEffectHandles.Empty();
+	}
+}
+
+UPA_PawnCombatComponent* UPA_GameplayAbility::GetPawnCombatComponentFromActorInfo() const
+{
+	// 폰 전투 컴포넌트 인터페이스를 통해, 플레이어 or 적의 전투 컴포넌트를 반환
+	if (UPA_PawnCombatComponent* PawnCombatComponent = Cast<IPawnCombatInterface>(GetAvatarActorFromActorInfo())->GetPawnCombatComponent())
+	{
+		return PawnCombatComponent;
 	}
 
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-APA_CharacterPlayer* UPA_GameplayAbility::GetPlayerCharacterFromActorInfo() const
-{
-	return Cast<APA_CharacterPlayer>(GetAvatarActorFromActorInfo());
-}
-
-APA_CharacterEnemy* UPA_GameplayAbility::GetEnemyCharacterFromActorInfo() const
-{
-	return Cast<APA_CharacterEnemy>(GetAvatarActorFromActorInfo());
+	return nullptr;
 }

@@ -26,6 +26,11 @@ void APA_CharacterBase::PostInitializeComponents()
 
 }
 
+UPA_PawnCombatComponent* APA_CharacterBase::GetPawnCombatComponent() const
+{
+	return nullptr;
+}
+
 void APA_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -62,7 +67,7 @@ void APA_CharacterBase::PossessedBy(AController* NewController)
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
-void APA_CharacterBase::GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties)
+void APA_CharacterBase::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties, int32 ApplyLevel)
 {
 }
 

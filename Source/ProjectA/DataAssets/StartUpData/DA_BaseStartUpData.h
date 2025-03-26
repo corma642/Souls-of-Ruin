@@ -12,9 +12,15 @@ class PROJECTA_API UDA_BaseStartUpData : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | AbilitySystem")
-	TArray<TSubclassOf<class UGameplayAbility>> StartUpAbilties;
+	// 시작 시 부여 및 활성화(OnGive) 어빌리티
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | StartUpData")
+	TArray<TSubclassOf<class UPA_GameplayAbility>> ActivateOnGiveAbilities;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | AbilitySystem")
+	// 시작 시 부여(OnTriggered) 어빌리티
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | StartUpData")
+	TArray<TSubclassOf<class UPA_GameplayAbility>> ReactiveAbilities;
+
+	// 시작 시 적용 게임플레이 이펙트
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | StartUpData")
 	TArray<TSubclassOf<class UGameplayEffect>> StartUpEffects;
 };

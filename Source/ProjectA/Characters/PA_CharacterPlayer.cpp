@@ -11,6 +11,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 
+#include "Components/Combat/PA_PlayerCombatComponent.h"
+
 #include "DataAssets/StartUpData/DA_BaseStartUpData.h"
 
 #include "GameModes/PA_GameModeBase.h"
@@ -50,20 +52,20 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+
+	// 전투 컴포넌트
+	PlayerCombatComponent = CreateDefaultSubobject<UPA_PlayerCombatComponent>(TEXT("PlayerCombatComponent"));
+}
+
+UPA_PawnCombatComponent* APA_CharacterPlayer::GetPawnCombatComponent() const
+{
+	return PlayerCombatComponent;
 }
 
 void APA_CharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 시작 어빌리티 활성화
-	for (const auto& StartActivateEventTag : StartActivateEventTags)
-	{
-		FGameplayEventData Payload;
-		Payload.EventTag = StartActivateEventTag;
-
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, StartActivateEventTag, Payload);
-	}
 }
 
 void APA_CharacterPlayer::PossessedBy(AController* NewController)
@@ -96,8 +98,11 @@ void APA_CharacterPlayer::PossessedBy(AController* NewController)
 				}
 			}
 
-			// 기본 캐릭터 시작 어빌리티 부여
-			GiveStartUpAbilities(BaseStartUpData->StartUpAbilties);
+			// 시작 시 부여 및 활성화(OnGive) 어빌리티 부여
+			GiveStartUpAbilities(BaseStartUpData->ActivateOnGiveAbilities, AbilityApplyLevel);
+
+			// 시작 시 부여(OnTriggered) 어빌리티 부여
+			GiveStartUpAbilities(BaseStartUpData->ReactiveAbilities, AbilityApplyLevel);
 
 			// 기본 캐릭터 시작 게임플레이 이펙트 적용
 			ApplyStartUpEffects(BaseStartUpData->StartUpEffects);
@@ -123,7 +128,7 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		{
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
 		}
-	
+
 		// 카메라 이동
 		if (LookAction)
 		{
@@ -164,11 +169,18 @@ void APA_CharacterPlayer::OnCameraZoom(const FInputActionValue& InputActionValue
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ZoomValue, GetWorld()->GetDeltaSeconds(), 10.f);
 }
 
-void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UGameplayAbility>> StartUpAbilties)
+void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties, int32 ApplyLevel)
 {
-	for (auto StartUpAbility : StartUpAbilties)
+	for (auto Ability : StartUpAbilties)
 	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartUpAbility));
+		if (Ability)
+		{
+			FGameplayAbilitySpec AbilitySpec(Ability);
+			AbilitySpec.SourceObject = this;
+			AbilitySpec.Level = ApplyLevel;
+
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
+		}
 	}
 }
 

@@ -9,24 +9,50 @@ APA_BaseWeapon::APA_BaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetRootComponent(WeaponMesh);
+	// 왼쪽 무기 메쉬
+	LeftWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftWeaponMesh"));
+	LeftWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftWeaponMesh->SetupAttachment(GetRootComponent());
 
-	WeaponCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponCollisionBox"));
-	WeaponCollisionBox->SetupAttachment(GetRootComponent());
-	WeaponCollisionBox->SetBoxExtent(FVector(20.f));
-	WeaponCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnCollisionBoxBeginOverlap);
-	WeaponCollisionBox->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnCollisionBoxEndOverlap);
+	// 왼쪽 콜리전 박스
+	LeftWeaponCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftWeaponCollisionBox"));
+	LeftWeaponCollisionBox->SetupAttachment(LeftWeaponMesh);
+	LeftWeaponCollisionBox->SetBoxExtent(FVector(20.f));
+	LeftWeaponCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftWeaponCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnLeftCollisionBoxBeginOverlap);
+	LeftWeaponCollisionBox->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnLeftCollisionBoxEndOverlap);
+
+
+	// 오른쪽 무기 메쉬
+	RightWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightWeaponMesh"));
+	RightWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightWeaponMesh->SetupAttachment(GetRootComponent());
+
+	// 오른쪽 콜리전 박스
+	RightWeaponCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("RightWeaponCollisionBox"));
+	RightWeaponCollisionBox->SetupAttachment(RightWeaponMesh);
+	RightWeaponCollisionBox->SetBoxExtent(FVector(20.f));
+	RightWeaponCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightWeaponCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnRightCollisionBoxBeginOverlap);
+	RightWeaponCollisionBox->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnRightCollisionBoxEndOverlap);
 }
 
-void APA_BaseWeapon::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
 }
 
-void APA_BaseWeapon::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APA_BaseWeapon::OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
+}
+
+void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+}
+
+void APA_BaseWeapon::OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 
 }
