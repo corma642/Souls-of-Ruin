@@ -25,10 +25,10 @@ protected:
 	UFUNCTION()
 	void OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UStaticMeshComponent> LeftWeaponMesh = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UBoxComponent> LeftWeaponCollisionBox;
 
 
@@ -40,10 +40,10 @@ protected:
 	UFUNCTION()
 	void OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UStaticMeshComponent> RightWeaponMesh = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UBoxComponent> RightWeaponCollisionBox;
 
 };

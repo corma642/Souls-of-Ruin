@@ -12,6 +12,7 @@
 #include "GameFramework/Controller.h"
 
 #include "Components/Combat/PA_PlayerCombatComponent.h"
+#include "Components/Input/PA_InputComponent.h"
 
 #include "DataAssets/StartUpData/DA_BaseStartUpData.h"
 
@@ -22,6 +23,8 @@
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
+
+#include "PA_GameplayTags.h"
 
 APA_CharacterPlayer::APA_CharacterPlayer()
 {
@@ -78,64 +81,41 @@ void APA_CharacterPlayer::PossessedBy(AController* NewController)
 
 	if (!CharacterStartUpData.IsNull())
 	{
+		// 기본 시작 데이터 동기 로딩
 		if (UDA_BaseStartUpData* BaseStartUpData = CharacterStartUpData.LoadSynchronous())
 		{
-			// 시작 시 부여 및 활성화(OnGive) 어빌리티 부여
-			GiveStartUpAbilities(BaseStartUpData->ActivateOnGiveAbilities);
-
-			// 시작 시 부여(OnTriggered) 어빌리티 부여
-			GiveStartUpAbilities(BaseStartUpData->ReactiveAbilities);
-
-			// 기본 캐릭터 시작 게임플레이 이펙트 적용
-			ApplyStartUpEffects(BaseStartUpData->StartUpEffects);
+			// 기본 어빌리티 부여 및 게임플레이 이펙트 적용
+			BaseStartUpData->GiveToAbilitySystemComponent(AbilitySystemComponent);
 		}
 	}
 }
 
 void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	check(InputConfigData);
+
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
 			Subsystem->ClearAllMappings();
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			Subsystem->AddMappingContext(InputConfigData->DefaultMappingContext, 0);
 		}
 	}
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// 이동
-		if (MoveAction)
-		{
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
-		}
+	UPA_InputComponent* PAInputComponent = CastChecked<UPA_InputComponent>(PlayerInputComponent);
 
-		// 카메라 회전
-		if (LookAction)
-		{
-			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
-		}
+	// 이동 함수 바인딩
+	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnMove);
 
-		// 카메라 줌 인-아웃
-		if (LookAction)
-		{
-			EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnCameraZoom);
-		}
+	// 카메라 회전 함수 바인딩
+	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
 
-		// 달리기 어빌리티
-		if (SprintAction)
-		{
-			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APA_CharacterPlayer::OnSprintStarted);
-			EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APA_CharacterPlayer::OnSprintEnded);
-		}
+	// 어빌리티 입력 액션 바인딩 함수 바인딩
+	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_CameraZoom, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnCameraZoom);
 
-		// 무기 장착 어빌리티
-		if (EquipWeaponAction)
-		{
-			EnhancedInputComponent->BindAction(EquipWeaponAction, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnEquipWeapon);
-		}
-	}
+	// 어빌리티 입력 액션 바인딩
+	PAInputComponent->AbilityInputActionBind(InputConfigData, this, &APA_CharacterPlayer::OnAbilityInputPressed, &APA_CharacterPlayer::OnAbilityInputReleased);
 }
 
 void APA_CharacterPlayer::OnMove(const FInputActionValue& InputActionValue)
@@ -164,45 +144,14 @@ void APA_CharacterPlayer::OnCameraZoom(const FInputActionValue& InputActionValue
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ZoomValue, GetWorld()->GetDeltaSeconds(), 10.f);
 }
 
-void APA_CharacterPlayer::OnSprintStarted(const FInputActionValue& InputActionValue)
+void APA_CharacterPlayer::OnAbilityInputPressed(FGameplayTag InInputTag)
 {
-	AbilitySystemComponent->TryActivateAbilitiesByTag(SprintTags, true);
+	AbilitySystemComponent->OnAbilityInputPressed(InInputTag);
 }
 
-void APA_CharacterPlayer::OnSprintEnded(const FInputActionValue& InputActionValue)
+void APA_CharacterPlayer::OnAbilityInputReleased(FGameplayTag InInputTag)
 {
-	AbilitySystemComponent->CancelAbilities(&SprintTags);
-}
-
-void APA_CharacterPlayer::OnEquipWeapon(const FInputActionValue& InputActionValue)
-{
-
-}
-
-void APA_CharacterPlayer::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties)
-{
-	for (auto Ability : StartUpAbilties)
-	{
-		if (Ability)
-		{
-			FGameplayAbilitySpec AbilitySpec(Ability);
-			AbilitySpec.SourceObject = this;
-			AbilitySpec.Level = 1;
-
-			AbilitySystemComponent->GiveAbility(AbilitySpec);
-		}
-	}
-}
-
-void APA_CharacterPlayer::ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects)
-{
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	for (auto StartUpEffect : StartUpEffects)
-	{
-		ApplyGameplayEffectToSelf(StartUpEffect, EffectContext);
-	}
+	AbilitySystemComponent->OnAbilityInputReleased(InInputTag);
 }
 
 void APA_CharacterPlayer::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)

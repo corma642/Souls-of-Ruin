@@ -36,17 +36,8 @@ public:
 
 	class UPA_AttributeSetBase* GetAttributeSet() const { return AttributeSet; }
 
-	// 자신에게 게임플레이 이펙트 적용
-	bool ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> Effect, FGameplayEffectContextHandle InEffectContextHandle);
-
 protected:
 	virtual void PossessedBy(AController* NewController) override;
-
-	// 기본 캐릭터 시작 어빌리티 부여 함수
-	virtual void GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties);
-
-	// 기본 캐릭터 시작 게임플레이 이펙트 적용 함수
-	virtual void ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | AbilitySystem")
 	TObjectPtr<class UPA_AbilitySystemComponent> AbilitySystemComponent;

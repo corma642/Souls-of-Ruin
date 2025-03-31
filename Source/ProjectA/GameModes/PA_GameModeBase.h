@@ -16,9 +16,4 @@ class PROJECTA_API APA_GameModeBase : public AGameModeBase
 public:
 	APA_GameModeBase();
 
-	EPA_GameDifficulty const GetCurrentGameDifficulty() const { return CurrentGameDifficulty; }
-
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Game Settings")
-	EPA_GameDifficulty CurrentGameDifficulty;
 };

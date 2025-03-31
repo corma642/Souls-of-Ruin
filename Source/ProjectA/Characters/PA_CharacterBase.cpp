@@ -46,31 +46,9 @@ UAbilitySystemComponent* APA_CharacterBase::GetAbilitySystemComponent() const
 	return nullptr;
 }
 
-bool APA_CharacterBase::ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> Effect, FGameplayEffectContextHandle InEffectContextHandle)
-{
-	if (!Effect.Get()) return false;
-
-	FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1, InEffectContextHandle);
-	if (SpecHandle.IsValid())
-	{
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		return ActiveGEHandle.WasSuccessfullyApplied();
-	}
-
-	return false;
-}
-
 void APA_CharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-}
-
-void APA_CharacterBase::GiveStartUpAbilities(const TArray<TSubclassOf<UPA_GameplayAbility>> StartUpAbilties)
-{
-}
-
-void APA_CharacterBase::ApplyStartUpEffects(const TArray<TSubclassOf<UGameplayEffect>> StartUpEffects)
-{
 }

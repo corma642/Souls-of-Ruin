@@ -11,4 +11,6 @@ class PROJECTA_API APA_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	
 };

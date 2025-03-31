@@ -1,48 +1,44 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "GameplayTagContainer.h"
 #include "PA_StructTypes.generated.h"
 
-// 아이템 데이터
-UCLASS(BlueprintType, Blueprintable)
-class UItemStaticData : public UObject
+// 플레이어 무기 어빌리티 세트
+USTRUCT(BlueprintType)
+struct FPlayerWeaponAbilitySet
 {
 	GENERATED_BODY()
 
 public:
-	//// 아이템 이름
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//FName Name;
+	// 어빌리티 입력 태그
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Category = "InputTag"))
+	FGameplayTag InputTag;
 
-	//// 아이템 액터 클래스
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TSubclassOf<class AItemActor> ItemActorClass;
+	// 어빌리티
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<class UPA_PlayerGameplayAbility> AbilityToGrant;
 
-	//// 아이템 부착 소켓 이름
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//FName AttachmentSocket = NAME_None;
+	bool IsValid() const;
+};
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//bool bCanBeEquipped = true;
 
-	//// 아이템이 가지는 애님 데이터
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//FCharacterAnimationData CharacterAnimationData;
+// 플레이어 무기 데이터
+USTRUCT(BlueprintType)
+struct FPlayerWeaponData
+{
+	GENERATED_BODY()
 
-	//// 아이템 장착 시, 부여되는 어빌리티
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+public:
+	// 무기 애님 레이어 링크
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	TSubclassOf<class UPA_PlayerLinkedAnimLayer> WeaponAnimLayerToLink;
 
-	//// 아이템 장착 시, 적용되는 게임플레이 이펙트
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TArray<TSubclassOf<UGameplayEffect>> OngoingEffects;
+	// 무기 입력 맵핑 콘텍스트
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	TObjectPtr<class UInputMappingContext> WeaponInputMappingContext;
 
-	//// 인벤토리 태그 목록
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TArray<FGameplayTag> InventoryTags;
-
-	//// 최대 보관 스택
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//int32 MaxStackCount = 1;
+	// 기본 부여 무기 어빌리티 배열
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	TArray<FPlayerWeaponAbilitySet> DefaultWeaponAbilities;
 };

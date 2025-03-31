@@ -11,6 +11,7 @@ class PROJECTA_API UPA_PlayerCombatComponent : public UPA_PawnCombatComponent
 {
 	GENERATED_BODY()
 	
-protected:
-	
+public:
+	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
+	class APA_PlayerWeapon* GetPlayerCarriedByTag(FGameplayTag InWeaponTagToGet) const;
 };
