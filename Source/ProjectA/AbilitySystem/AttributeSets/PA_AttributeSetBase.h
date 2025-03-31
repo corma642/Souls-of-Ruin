@@ -47,4 +47,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
 	FGameplayAttributeData MaxMovementSpeed;
 	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, MaxMovementSpeed)
+
+	// 현재 공격속도
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData AttackSpeed;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, AttackSpeed)
 };

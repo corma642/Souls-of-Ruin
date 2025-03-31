@@ -20,6 +20,11 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 	{
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth(), 0, GetMaxHealth()));
 	}
+	// 현재 스태미나 변경
+	else if (Data.EvaluatedData.Attribute == GetCurrentStaminaAttribute())
+	{
+		SetCurrentStamina(FMath::Clamp(GetCurrentStamina(), 0, GetMaxStamina()));
+	}
 	// 최대 이동속도 변경
 	else if (Data.EvaluatedData.Attribute == GetMaxMovementSpeedAttribute())
 	{
