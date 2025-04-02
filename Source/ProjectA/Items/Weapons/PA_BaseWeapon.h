@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "PA_BaseWeapon.generated.h"
 
+// 대상 상호작용 델리게이트
+DECLARE_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*, InActor)
+
 UCLASS()
 class PROJECTA_API APA_BaseWeapon : public AActor
 {
@@ -17,6 +20,14 @@ public:
 	FORCEINLINE class UBoxComponent* GetLeftWeaponCollisionBox() const { return LeftWeaponCollisionBox; }
 	FORCEINLINE class UBoxComponent* GetRightWeaponCollisionBox() const { return RightWeaponCollisionBox; }
 
+	// 상호작용 시작 이벤트
+	FOnTargetInteractedDelegate OnWeaponTargetHitStart;
+	
+	// 상호작용 종료 이벤트
+	FOnTargetInteractedDelegate OnWeaponTargetHitEnd;
+
+
+	///////////////////////////////////////////////////////////////////////////
 	/* 왼쪽 무기 */
 protected:
 	UFUNCTION()
@@ -32,6 +43,7 @@ protected:
 	TObjectPtr<class UBoxComponent> LeftWeaponCollisionBox;
 
 
+	///////////////////////////////////////////////////////////////////////////
 	/* 오른쪽 무기 */
 protected:
 	UFUNCTION()
@@ -45,5 +57,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UBoxComponent> RightWeaponCollisionBox;
-
 };

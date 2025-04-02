@@ -3,6 +3,7 @@
 
 #include "Components/Combat/PA_PawnCombatComponent.h"
 #include "Items/Weapons/PA_BaseWeapon.h"
+#include "Components/BoxComponent.h"
 
 UPA_PawnCombatComponent::UPA_PawnCombatComponent()
 {
@@ -23,6 +24,12 @@ void UPA_PawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRe
 		// 무장/비무장의 개념이 없는 경우에는 이를 통해, 스폰과 동시에 장착한 무기를 등록
 		CurrentEquippingWeaponTag = InWeaponTagToRegister;
 	}
+
+
+	// 무기의 상ㅎ작용 시작 / 종료 이벤트 델리게이트와
+	// 무기 피해를 입히는 함수, 종료하는 함수와 바인딩
+	InWeaponToRegister->OnWeaponTargetHitStart.BindUObject(this, &UPA_PawnCombatComponent::OnWeaponHitStartTargetActor);
+	InWeaponToRegister->OnWeaponTargetHitEnd.BindUObject(this, &UPA_PawnCombatComponent::OnWeaponHitEndTargetActor);
 }
 
 APA_BaseWeapon* UPA_PawnCombatComponent::GetCharacterCarriedWeaponByTag(FGameplayTag InWeaponTagToGet) const
@@ -46,4 +53,43 @@ APA_BaseWeapon* UPA_PawnCombatComponent::GetCharacterCurrentEquippingWeapon() co
 	}
 
 	return nullptr;
+}
+
+void UPA_PawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType)
+{
+	APA_BaseWeapon* Weapon = GetCharacterCurrentEquippingWeapon();
+	check(Weapon);
+
+	// 왼쪽 무기의 콜리전 전환
+	if (ToggleDamageType == EToggleDamageType::LeftWeapon)
+	{
+		if (bShouldEnable)
+		{
+			Weapon->GetLeftWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			Weapon->GetLeftWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+	// 오른쪽 무기의 콜리전 전환
+	else if (ToggleDamageType == EToggleDamageType::RightWeapon)
+	{
+		if (bShouldEnable)
+		{
+			Weapon->GetRightWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			Weapon->GetRightWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+}
+
+void UPA_PawnCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor)
+{
+}
+
+void UPA_PawnCombatComponent::OnWeaponHitEndTargetActor(AActor* HitActor)
+{
 }

@@ -12,6 +12,7 @@ class PROJECTA_API UDA_BaseStartUpData : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	// 어빌리티 부여 함수
 	virtual void GiveToAbilitySystemComponent(class UPA_AbilitySystemComponent* InASCToGive);
 
 protected:

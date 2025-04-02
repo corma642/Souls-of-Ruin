@@ -32,4 +32,8 @@ namespace PA_GameplayTags
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Sprinting);
 
+
+	/* Enemy Tags */
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon_Goblin);
+
 }

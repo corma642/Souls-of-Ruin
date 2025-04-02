@@ -14,7 +14,8 @@
 #include "Components/Combat/PA_PlayerCombatComponent.h"
 #include "Components/Input/PA_InputComponent.h"
 
-#include "DataAssets/StartUpData/DA_BaseStartUpData.h"
+//#include "DataAssets/StartUpData/DA_BaseStartUpData.h"
+#include "DataAssets/StartUpData/DA_PlayerStartUpData.h"
 
 #include "GameModes/PA_GameModeBase.h"
 
@@ -82,10 +83,10 @@ void APA_CharacterPlayer::PossessedBy(AController* NewController)
 	if (!CharacterStartUpData.IsNull())
 	{
 		// 기본 시작 데이터 동기 로딩
-		if (UDA_BaseStartUpData* BaseStartUpData = CharacterStartUpData.LoadSynchronous())
+		if (UDA_PlayerStartUpData* StartUpData = Cast<UDA_PlayerStartUpData>(CharacterStartUpData.LoadSynchronous()))
 		{
 			// 기본 어빌리티 부여 및 게임플레이 이펙트 적용
-			BaseStartUpData->GiveToAbilitySystemComponent(AbilitySystemComponent);
+			StartUpData->GiveToAbilitySystemComponent(AbilitySystemComponent);
 		}
 	}
 }

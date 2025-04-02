@@ -39,22 +39,60 @@ APA_BaseWeapon::APA_BaseWeapon()
 	RightWeaponCollisionBox->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnRightCollisionBoxEndOverlap);
 }
 
+// 왼쪽 콜리전
 void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	APawn* WeaponOwningPawn = GetInstigator<APawn>();
+	check(WeaponOwningPawn);
 
+	if (APawn* HitPawn = Cast<APawn>(OtherActor))
+	{
+		if (HitPawn != WeaponOwningPawn)
+		{
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
+		}
+	}
 }
 
 void APA_BaseWeapon::OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	APawn* WeaponOwningPawn = GetInstigator<APawn>();
+	check(WeaponOwningPawn);
 
+	if (APawn* HitPawn = Cast<APawn>(OtherActor))
+	{
+		if (HitPawn != WeaponOwningPawn)
+		{
+			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
+		}
+	}
 }
 
+// 오른쪽 콜리전
 void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	APawn* WeaponOwningPawn = GetInstigator<APawn>();
+	check(WeaponOwningPawn);
 
+	if (APawn* HitPawn = Cast<APawn>(OtherActor))
+	{
+		if (HitPawn != WeaponOwningPawn)
+		{
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
+		}
+	}
 }
 
 void APA_BaseWeapon::OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	APawn* WeaponOwningPawn = GetInstigator<APawn>();
+	check(WeaponOwningPawn);
 
+	if (APawn* HitPawn = Cast<APawn>(OtherActor))
+	{
+		if (HitPawn != WeaponOwningPawn)
+		{
+			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
+		}
+	}
 }

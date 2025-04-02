@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectATypes/PA_EnumTypes.h"
 #include "PA_FunctionLibrary.generated.h"
 
 UCLASS()
@@ -23,4 +24,9 @@ public:
 	// 액터에 태그 제거하는 함수 (없는 경우 패스)
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
 	static void RemoveGameplayTagToActorIfFound(AActor* InActor, FGameplayTag InTag);
+
+	// 폰 전투 컴포넌트 가져오기
+	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
+	static class UPA_PawnCombatComponent* BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType);
+
 };

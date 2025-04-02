@@ -45,3 +45,15 @@ void UPA_FunctionLibrary::RemoveGameplayTagToActorIfFound(AActor* InActor, FGame
 		ASC->RemoveLooseGameplayTag(InTag);
 	}
 }
+
+UPA_PawnCombatComponent* UPA_FunctionLibrary::BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType)
+{
+	UPA_PawnCombatComponent* PawnCombatComponent = NativeGetPawnCombatComponentFromActor(InActor);
+
+	OutValidType = PawnCombatComponent ? EPA_ValidType::Valid : EPA_ValidType::InValid;
+	if (PawnCombatComponent)
+	{
+		return PawnCombatComponent;
+	}
+	return nullptr;
+}

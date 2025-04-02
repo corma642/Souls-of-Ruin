@@ -27,7 +27,6 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
     TMap<int32, TObjectPtr<class UAnimMontage>> ComboAttackMontagesMap;
 
-protected:
     // 현재 콤보 수
     UPROPERTY()
     mutable int32 CurrentCombo = 1;
@@ -36,10 +35,10 @@ protected:
     UPROPERTY()
     TObjectPtr<class UAbilityTask_PlayMontageAndWait> MontageTask = nullptr;
 
-    // 콤보 공격 초기화 타이머 핸들
-    FTimerHandle ComboTimerHandle;
-
+private:
     // 콤보 입력 플래그 (다음 공격을 입력했는지 여부)
     bool bComboInputReceived = false;
 
+    // 콤보 공격 초기화 타이머 핸들
+    FTimerHandle ComboTimerHandle;
 };

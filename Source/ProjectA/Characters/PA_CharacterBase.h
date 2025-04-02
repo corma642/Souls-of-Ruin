@@ -45,6 +45,10 @@ protected:
 	UPROPERTY(Transient, EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | AbilitySystem")
 	TObjectPtr<class UPA_AttributeSetBase> AttributeSet;
 
+
+	///////////////////////////////////////////////////////////////////////////
+	/* StartUpData */
+protected:
 	// 캐릭터 시작 어빌리티 약 참조 데이터
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | StartUpData")
 	TSoftObjectPtr<class UDA_BaseStartUpData> CharacterStartUpData;

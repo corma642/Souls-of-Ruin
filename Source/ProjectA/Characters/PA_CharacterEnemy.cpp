@@ -5,6 +5,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/Combat/PA_EnemyCombatComponent.h"
 
+//#include "DataAssets/StartUpData/DA_BaseStartUpData.h"
+#include "DataAssets/StartUpData/DA_EnemyStartUpData.h"
+
+#include "Engine/AssetManager.h"
+
 APA_CharacterEnemy::APA_CharacterEnemy()
 {
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -26,4 +31,30 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 UPA_PawnCombatComponent* APA_CharacterEnemy::GetPawnCombatComponent() const
 {
 	return EnemyCombatComponent;
+}
+
+void APA_CharacterEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitEnemyStartUpData();
+}
+
+void APA_CharacterEnemy::InitEnemyStartUpData()
+{
+	if (CharacterStartUpData.IsNull()) return;
+
+	// 기본 시작 데이터 비동기 로딩
+	UAssetManager::GetStreamableManager().RequestAsyncLoad(
+		CharacterStartUpData.ToSoftObjectPath(),
+		FStreamableDelegate::CreateLambda(
+			[&]()
+			{
+				if (UDA_EnemyStartUpData* LoadedData = Cast<UDA_EnemyStartUpData>(CharacterStartUpData.Get()))
+				{
+					LoadedData->GiveToAbilitySystemComponent(AbilitySystemComponent);
+				}
+			}
+		)
+	);
 }

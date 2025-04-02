@@ -31,4 +31,7 @@ namespace PA_GameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Sprinting, "Player.Status.Sprinting");
 
+
+	/* Enemy Tags */
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon_Goblin, "Enemy.Weapon.Goblin");
 }

@@ -20,9 +20,18 @@ public:
 	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
 	/* ICombatInterface Interface */
 
+protected:
+	virtual void PossessedBy(AController* NewController) override;
+
 private:
 	// 적 전투 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPA_EnemyCombatComponent> EnemyCombatComponent;
 
+
+	///////////////////////////////////////////////////////////////////////////
+	/* StartUpData */
+private:
+	// 적 시작 데이터 초기화
+	void InitEnemyStartUpData();
 };

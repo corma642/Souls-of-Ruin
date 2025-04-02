@@ -50,6 +50,17 @@ void UGA_Player_LightAttackMaster::OnComboNotifyReceived(const FGameplayEventDat
 	if (bComboInputReceived)
 	{
 		CurrentCombo++;
+
+		// 공격 방향
+		const FVector AttackDirection = GetPlayerCharacterFromActorInfo()->GetLastMovementInputVector().GetSafeNormal();
+
+		if (!AttackDirection.IsNearlyZero())
+		{
+			// 입력 벡터에 따른 회전값 계산
+			const FRotator NewRotation = AttackDirection.Rotation();
+			GetPlayerCharacterFromActorInfo()->SetActorRotation(NewRotation);
+		}
+
 		ActivateAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, nullptr);
 	}
 	else
