@@ -13,9 +13,10 @@ class PROJECTA_API APA_CharacterEnemy : public APA_CharacterBase
 
 public:
 	APA_CharacterEnemy();
-
+	
+	FORCEINLINE class UPA_EnemyCombatComponent* GetEnemyCombatComponent() const { return EnemyCombatComponent; }
+	
 	/* ICombatInterface Interface */
-	// 전투 컴포넌트 가져오기 인터페이스 함수
 	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
 	/* ICombatInterface Interface */
 
