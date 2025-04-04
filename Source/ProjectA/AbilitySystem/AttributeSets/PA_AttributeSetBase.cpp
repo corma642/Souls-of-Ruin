@@ -9,6 +9,13 @@
 
 UPA_AttributeSetBase::UPA_AttributeSetBase()
 {
+	InitCurrentHealth(1.0f);
+	InitMaxHealth(1.0f);
+	InitCurrentStamina(1.0f);
+	InitMaxStamina(1.0f);
+	InitMaxMovementSpeed(1.0f);
+	InitAttackPower(1.0f);
+	InitDefense(1.0f);
 }
 
 void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -35,5 +42,12 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 		{
 			CharacterMovement->MaxWalkSpeed = GetMaxMovementSpeed();
 		}
+	}
+	// 받은 피해량 변경
+	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
+	{
+		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetDamageTaken(), 0.0f, GetMaxHealth()));
+
+		GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Cyan, FString::Printf(TEXT("MaxHP: %f, CurrentHP: %f"), GetMaxHealth(), GetCurrentHealth()));
 	}
 }

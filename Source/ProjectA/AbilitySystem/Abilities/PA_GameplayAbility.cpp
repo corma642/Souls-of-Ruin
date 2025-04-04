@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "Interface/PawnCombatInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #include "PA_FunctionLibrary.h"
 
@@ -101,4 +102,22 @@ UPA_PawnCombatComponent* UPA_GameplayAbility::GetPawnCombatComponentFromActorInf
 UPA_AbilitySystemComponent* UPA_GameplayAbility::GetPAAbilitySystemComponentFromActorInfo() const
 {
 	return Cast<UPA_AbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+}
+
+FActiveGameplayEffectHandle UPA_GameplayAbility::NativeApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	check(TargetASC || InSpecHandle.IsValid());
+
+	// 대상 ASC에 게임플레이 이펙트 스펙 핸들 적용
+	return GetPAAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
+}
+
+FActiveGameplayEffectHandle UPA_GameplayAbility::BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EPA_SuccessType& OutSuccessType)
+{
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(TargetActor, InSpecHandle);
+
+	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EPA_SuccessType::SuccessFul : EPA_SuccessType::Failed;
+
+	return ActiveGameplayEffectHandle;
 }

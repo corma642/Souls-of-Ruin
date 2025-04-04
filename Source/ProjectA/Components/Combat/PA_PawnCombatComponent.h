@@ -37,17 +37,6 @@ public:
 	// 현재 캐릭터에 장착된 무기를 가져오는 함수
 	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
 	class APA_BaseWeapon* GetCharacterCurrentEquippingWeapon() const;
-
-public:
-	// 무기 콜리전 전환 함수
-	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
-	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::None);
-
-	// 무기 피해 함수
-	virtual void OnWeaponHitStartTargetActor(AActor* HitActor);
-	
-	// 무기 피해 종료 함수
-	virtual void OnWeaponHitEndTargetActor(AActor* HitActor);
 	
 protected:
 	// 현재 장착된 무기의 태그
@@ -57,4 +46,22 @@ protected:
 	// 현재 캐릭터에 등록된 무기 맵
 	UPROPERTY()
 	TMap<FGameplayTag, TObjectPtr<class APA_BaseWeapon>> CharacterCarriedWeaponMap;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Interaction */
+public:
+	// 무기 콜리전 전환 함수
+	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
+	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::None);
+
+	// 무기 피해 함수
+	virtual void OnWeaponHitStartTargetActor(AActor* HitActor);
+
+	// 무기 피해 종료 함수
+	virtual void OnWeaponHitEndTargetActor(AActor* HitActor);
+
+protected:
+	// 무기에 오버랩된 액터 배열
+	TArray<AActor*> OverlappedActors;
 };

@@ -15,3 +15,11 @@ enum class EPA_InputMode : uint8
 	GameOnly,
 	UIOnly,
 };
+
+// 성공 여부 열거형
+UENUM(BlueprintType)
+enum class EPA_SuccessType : uint8
+{
+	SuccessFul,
+	Failed,
+};

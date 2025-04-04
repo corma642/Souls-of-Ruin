@@ -48,4 +48,15 @@ protected:
 	// 어빌리티 활성화 정책
 	UPROPERTY(EditDefaultsOnly, Category = "Custom | Ability")
 	EAbilityActivationPolicy AbilityActivationPolicy = EAbilityActivationPolicy::OnTriggered;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Combat */
+protected:
+	// 대상에게 게임플레이 이펙트 스펙 핸들 적용하는 함수
+	FActiveGameplayEffectHandle NativeApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "Custom | Combat", meta = (DisplayName = "Apply Effect Spec Handle To Target", ExpandEnumAsExecs = "OutSuccessType"))
+	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EPA_SuccessType& OutSuccessType);
+
 };

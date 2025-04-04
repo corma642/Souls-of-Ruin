@@ -48,8 +48,19 @@ public:
 	FGameplayAttributeData MaxMovementSpeed;
 	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, MaxMovementSpeed)
 
-	// 현재 공격속도
+	// 공격력
 	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
-	FGameplayAttributeData AttackSpeed;
-	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, AttackSpeed)
+	FGameplayAttributeData AttackPower;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, AttackPower)
+
+	// 방어력
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData Defense;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, Defense)
+
+	// 받은 피해량
+	UPROPERTY(BlueprintReadOnly, Category = "Custom | Attribute")
+	FGameplayAttributeData DamageTaken;
+	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, DamageTaken)
+
 };

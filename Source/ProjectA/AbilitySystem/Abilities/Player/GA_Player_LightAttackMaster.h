@@ -28,7 +28,7 @@ protected:
     TMap<int32, TObjectPtr<class UAnimMontage>> ComboAttackMontagesMap;
 
     // 현재 콤보 수
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly, Category = "Custom | Ability")
     mutable int32 CurrentCombo = 1;
 
     // 몽타주 플레이 태스크

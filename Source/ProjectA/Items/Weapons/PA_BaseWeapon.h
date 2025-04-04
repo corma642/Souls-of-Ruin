@@ -7,7 +7,7 @@
 #include "PA_BaseWeapon.generated.h"
 
 // 대상 상호작용 델리게이트
-DECLARE_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*, InActor)
+DECLARE_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*)
 
 UCLASS()
 class PROJECTA_API APA_BaseWeapon : public AActor

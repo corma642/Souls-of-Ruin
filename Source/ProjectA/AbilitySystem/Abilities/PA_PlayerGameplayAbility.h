@@ -10,7 +10,7 @@ UCLASS()
 class PROJECTA_API UPA_PlayerGameplayAbility : public UPA_GameplayAbility
 {
 	GENERATED_BODY()
-	
+
 public:
 	// 플레이어 캐릭터 가져오기
 	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
@@ -30,4 +30,17 @@ private:
 
 	// 플레이어 컨트롤러 캐시 데이터
 	TWeakObjectPtr<class APA_PlayerController> CachedPlayerController;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Combat */
+public:
+	// 적에게 적용시킬 게임플레이 이펙트 스펙 핸들 생성 함수
+	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
+	FGameplayEffectSpecHandle MakePlayerDamageEffectSpecHandle(
+		TSubclassOf<UGameplayEffect> EffectClass,
+		float InBaseWeaponDamage,
+		FGameplayTag InCurrentAttackTypeTag,
+		int32 InComboAttackCount
+	);
 };

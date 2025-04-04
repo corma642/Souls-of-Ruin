@@ -32,8 +32,15 @@ namespace PA_GameplayTags
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Sprinting);
 
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Light);
+
 
 	/* Enemy Tags */
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon_Goblin);
 
+
+	/* Shared Tags */
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_MeleeHit);
+
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_BaseDamage);
 }

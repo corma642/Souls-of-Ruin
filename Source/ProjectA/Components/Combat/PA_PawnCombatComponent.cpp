@@ -49,7 +49,7 @@ APA_BaseWeapon* UPA_PawnCombatComponent::GetCharacterCurrentEquippingWeapon() co
 	if (CurrentEquippingWeaponTag.IsValid())
 	{
 		// 태그를 통해 캐릭터에 등록된 무기를 가져와 반환
-		GetCharacterCarriedWeaponByTag(CurrentEquippingWeaponTag);
+		return GetCharacterCarriedWeaponByTag(CurrentEquippingWeaponTag);
 	}
 
 	return nullptr;
@@ -70,6 +70,7 @@ void UPA_PawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleD
 		else
 		{
 			Weapon->GetLeftWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			OverlappedActors.Empty();
 		}
 	}
 	// 오른쪽 무기의 콜리전 전환
@@ -82,6 +83,7 @@ void UPA_PawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleD
 		else
 		{
 			Weapon->GetRightWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			OverlappedActors.Empty();
 		}
 	}
 }

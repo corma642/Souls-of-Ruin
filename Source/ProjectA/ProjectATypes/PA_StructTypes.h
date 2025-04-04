@@ -41,4 +41,8 @@ public:
 	// 기본 부여 무기 어빌리티 배열
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	TArray<FPlayerWeaponAbilitySet> DefaultWeaponAbilities;
+
+	// 기본 무기 피해량
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	float BaseWeaponDamage;
 };
