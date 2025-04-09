@@ -38,7 +38,7 @@ FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecH
 {
 	// 게임플레이 이펙트 콘텍스트 핸들 생성
 	FGameplayEffectContextHandle ContextHandle = GetPAAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	
+
 	// 어빌리티 설정 및 원인 객체, Instigator 설정
 	ContextHandle.SetAbility(this);
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());

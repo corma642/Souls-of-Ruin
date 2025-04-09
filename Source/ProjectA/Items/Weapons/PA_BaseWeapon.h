@@ -20,6 +20,9 @@ public:
 	FORCEINLINE class UBoxComponent* GetLeftWeaponCollisionBox() const { return LeftWeaponCollisionBox; }
 	FORCEINLINE class UBoxComponent* GetRightWeaponCollisionBox() const { return RightWeaponCollisionBox; }
 
+	FORCEINLINE class UStaticMeshComponent* GetLeftWeaponMesh() const { return LeftWeaponMesh; }
+	FORCEINLINE class UStaticMeshComponent* GetRightWeaponMesh() const { return RightWeaponMesh; }
+
 	// 상호작용 시작 이벤트
 	FOnTargetInteractedDelegate OnWeaponTargetHitStart;
 	

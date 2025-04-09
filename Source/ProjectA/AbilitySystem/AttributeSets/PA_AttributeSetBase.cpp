@@ -7,6 +7,9 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "PA_FunctionLibrary.h"
+#include "PA_GameplayTags.h"
+
 UPA_AttributeSetBase::UPA_AttributeSetBase()
 {
 	InitCurrentHealth(1.0f);
@@ -46,8 +49,16 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 	// 받은 피해량 변경
 	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
 	{
+		// 현재 체력에서 받은 피해량 만큼 차감
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetDamageTaken(), 0.0f, GetMaxHealth()));
 
 		GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Cyan, FString::Printf(TEXT("MaxHP: %f, CurrentHP: %f"), GetMaxHealth(), GetCurrentHealth()));
+
+		// 현재 체력이 0보다 작은 경우
+		if (GetCurrentHealth() <= KINDA_SMALL_NUMBER)
+		{
+			// 사망 상태 태그 추가
+			UPA_FunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(), PA_GameplayTags::Shared_Status_Dead);
+		}
 	}
 }

@@ -39,6 +39,9 @@ void UPA_PlayerCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor)
 
 	// 자신에게 게임플레이 이벤트 전달
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner<APawn>(), PA_GameplayTags::Shared_Event_MeleeHit, Payload);
+
+	// 피격 정지 효과
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner<APawn>(), PA_GameplayTags::Player_Event_HitPause, FGameplayEventData());
 }
 
 void UPA_PlayerCombatComponent::OnWeaponHitEndTargetActor(AActor* HitActor)

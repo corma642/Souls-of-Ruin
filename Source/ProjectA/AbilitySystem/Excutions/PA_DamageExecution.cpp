@@ -107,24 +107,24 @@ void UPA_DamageExecution::Execute_Implementation(const FGameplayEffectCustomExec
 	{
 		// 공격력 x ( (19.2/49) x (Divide - 0.125)^2 + 0.1 )
 		const float Ratio = (19.2f / 49.0f) * FMath::Pow(Divide - 0.125f, 2.0f) + 0.1f;
-		FinalDamage = AttackPower * BaseDamage * Ratio;
+		FinalDamage = AttackPower * Ratio;
 	}
 	else if (Divide < 2.5f)
 	{
 		// 공격력 x ( (-0.4/3) x (Divide - 2.5)^2 + 0.7 )
 		const float Ratio = (-0.4f / 3.0f) * FMath::Pow(Divide - 2.5f, 2.0f) + 0.7f;
-		FinalDamage = AttackPower * BaseDamage * Ratio;
+		FinalDamage = AttackPower * Ratio;
 	}
 	else if (Divide < 8.0f)
 	{
 		// 공격력 x ( (-0.8/121) x (Divide - 8)^2 + 0.9 )
 		const float Ratio = (-0.8f / 121.0f) * FMath::Pow(Divide - 8.0f, 2.0f) + 0.9f;
-		FinalDamage = AttackPower * BaseDamage * Ratio;
+		FinalDamage = AttackPower * Ratio;
 	}
 	else // Divide >= 8.0f
 	{
 		// 공격력 x 0.9
-		FinalDamage = AttackPower * BaseDamage * 0.9f;
+		FinalDamage = AttackPower * 0.9f;
 	}
 
 	// 피해자의 받은 피해량 갱신

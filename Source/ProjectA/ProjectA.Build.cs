@@ -19,6 +19,7 @@ public class ProjectA : ModuleRules
             "GameplayTasks",
             "MotionWarping",
             "AnimGraphRuntime",
+            "Niagara",
         });
     }
 }
