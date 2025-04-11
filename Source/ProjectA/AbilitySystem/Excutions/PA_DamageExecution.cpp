@@ -74,17 +74,17 @@ void UPA_DamageExecution::Execute_Implementation(const FGameplayEffectCustomExec
 		}
 		else if (TagMagnitude.Key.MatchesTagExact(PA_GameplayTags::Player_SetByCaller_AttackType_Light))
 		{
-			LightAttackComboCount = TagMagnitude.Value;
+			LightAttackComboCount = (int32)TagMagnitude.Value;
 		}
 	}
 
 
 	// 최종 대미지 계산
 
-	// 약 공격 콤보 대미지 추가 (+5%) 콤보 1은 제외
+	// 약 공격 콤보 대미지 추가 (+15%) 콤보 1은 제외
 	if (LightAttackComboCount > 0)
 	{
-		const float DamageIncreasePercentLight = (LightAttackComboCount - 1) * 0.05f + 1.0f;
+		const float DamageIncreasePercentLight = (LightAttackComboCount - 1) * 0.15f + 1.0f;
 		BaseDamage *= DamageIncreasePercentLight;
 	}
 

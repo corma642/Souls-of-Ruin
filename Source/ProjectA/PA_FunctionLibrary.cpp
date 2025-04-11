@@ -1,6 +1,6 @@
 
 #include "PA_FunctionLibrary.h"
-#include "Interface/PawnCombatInterface.h"
+#include "Interface/PA_PawnCombatInterface.h"
 
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -9,7 +9,7 @@ UPA_PawnCombatComponent* UPA_FunctionLibrary::NativeGetPawnCombatComponentFromAc
 {
 	check(InActor);
 
-	if (IPawnCombatInterface* PawnCombatInterface = Cast<IPawnCombatInterface>(InActor))
+	if (IPA_PawnCombatInterface* PawnCombatInterface = Cast<IPA_PawnCombatInterface>(InActor))
 	{
 		return PawnCombatInterface->GetPawnCombatComponent();
 	}

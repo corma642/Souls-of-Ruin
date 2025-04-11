@@ -54,7 +54,7 @@ FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecH
 	if (InCurrentAttackTypeTag.IsValid())
 	{
 		// 현재 공격 유형 태그에 콤보 수 저장
-		Spec.Data->SetSetByCallerMagnitude(InCurrentAttackTypeTag, InBaseWeaponDamage);
+		Spec.Data->SetSetByCallerMagnitude(InCurrentAttackTypeTag, InComboAttackCount);
 	}
 
 	return Spec;

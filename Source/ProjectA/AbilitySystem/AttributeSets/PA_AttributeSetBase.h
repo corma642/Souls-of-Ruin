@@ -63,4 +63,7 @@ public:
 	FGameplayAttributeData DamageTaken;
 	ATTRIBUTE_ACCESSORS(UPA_AttributeSetBase, DamageTaken)
 
+private:
+	// 소유자의 UI 인터페이스 캐시
+	TWeakInterfacePtr<class IPA_PawnUIInterface> CachedPawnInterface;
 };

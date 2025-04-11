@@ -16,12 +16,6 @@ class PROJECTA_API APA_CharacterPlayer : public APA_CharacterBase
 public:
 	APA_CharacterPlayer();
 
-	FORCEINLINE class UPA_PlayerCombatComponent* GetPlayerCombatComponent() const { return PlayerCombatComponent; }
-
-	/* ICombatInterface Interface */
-	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
-	/* ICombatInterface Interface */
-
 protected:
 	virtual void BeginPlay();
 	virtual void PossessedBy(AController* NewController) override;
@@ -32,10 +26,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> SpringArm;
-
-	// 플레이어 전투 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UPA_PlayerCombatComponent> PlayerCombatComponent;
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -68,4 +58,53 @@ private:
 protected:
 	// 최대 이동속도 변경 함수
 	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* CameraMask */
+protected:
+	// 카메라 마스크 업데이트 함수
+	void CameraMaskUpdate();
+
+	// 카메라 마스크 업데이트 간격
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Camera", meta = (AllowPrivateAccess = "true"))
+	float CameraMaskUpdateInterval = 0.15f;
+
+private:
+	FTimerHandle CameraMaskTimerHandle;
+
+	// 카메라에 마스킹된 장애물 배열
+	TArray<TWeakObjectPtr<UPrimitiveComponent>> CameraMaskingObstacle;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Combat */
+public:
+	FORCEINLINE class UPA_PlayerCombatComponent* GetPlayerCombatComponent() const { return PlayerCombatComponent; }
+
+	// 플레이어 전투 컴포넌트 가져오기 인터페이스 함수
+	/* ICombatInterface Interface */
+	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
+	/* ICombatInterface Interface */
+
+protected:
+	// 플레이어 전투 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat")
+	TObjectPtr<class UPA_PlayerCombatComponent> PlayerCombatComponent;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* UI & Widget */
+public:
+	// 플레이어 UI 컴포넌트 가져오기 인터페이스 함수
+	/* IPA_PawnUIInterface Interface */
+	virtual UPA_PawnUIComponent* GetUIComponent() const override;
+	virtual UPA_PlayerUIComponent* GetPlayerUIComponent() const override;
+	/* IPA_PawnUIInterface Interface */
+
+protected:
+	// 플레이어 UI 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | UI")
+	TObjectPtr<class UPA_PlayerUIComponent> PlayerUIComponent;
+
 };

@@ -13,8 +13,8 @@
 
 #include "Components/Combat/PA_PlayerCombatComponent.h"
 #include "Components/Input/PA_InputComponent.h"
+#include "Components/UI/PA_PlayerUIComponent.h"
 
-//#include "DataAssets/StartUpData/DA_BaseStartUpData.h"
 #include "DataAssets/StartUpData/DA_PlayerStartUpData.h"
 
 #include "GameModes/PA_GameModeBase.h"
@@ -29,6 +29,8 @@
 
 APA_CharacterPlayer::APA_CharacterPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	GetCapsuleComponent()->InitCapsuleSize(38.f, 82.0f);
 
 	bUseControllerRotationPitch = false;
@@ -61,6 +63,9 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 	// 전투 컴포넌트
 	PlayerCombatComponent = CreateDefaultSubobject<UPA_PlayerCombatComponent>(TEXT("PlayerCombatComponent"));
 
+	// UI 컴포넌트
+	PlayerUIComponent = CreateDefaultSubobject<UPA_PlayerUIComponent>(TEXT("PlayerUIComponent"));
+
 	// 최대 이동속도 변경 콜백 함수 바인딩
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterPlayer::OnMaxMovementSpeedChanged);
 }
@@ -70,10 +75,28 @@ UPA_PawnCombatComponent* APA_CharacterPlayer::GetPawnCombatComponent() const
 	return PlayerCombatComponent;
 }
 
+UPA_PawnUIComponent* APA_CharacterPlayer::GetUIComponent() const
+{
+	return PlayerUIComponent;
+}
+
+UPA_PlayerUIComponent* APA_CharacterPlayer::GetPlayerUIComponent() const
+{
+	return PlayerUIComponent;
+}
+
 void APA_CharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 카메라 마스크 업데이트 설정
+	GetWorld()->GetTimerManager().SetTimer(
+		CameraMaskTimerHandle,
+		this,
+		&APA_CharacterPlayer::CameraMaskUpdate,
+		CameraMaskUpdateInterval,
+		true
+	);
 }
 
 void APA_CharacterPlayer::PossessedBy(AController* NewController)
@@ -159,4 +182,85 @@ void APA_CharacterPlayer::OnMaxMovementSpeedChanged(const FOnAttributeChangeData
 {
 	// 전달받은 최대 이동속도로 갱신
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+}
+
+void APA_CharacterPlayer::CameraMaskUpdate()
+{
+	// 카메라 마스크 로직
+	TArray<FHitResult> HitResults;
+
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+
+	// 카메라 ~ 스프링 암으로 구체 트레이싱 수행 (본인 포함)
+	bool bHitDetected = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		Camera->GetComponentLocation(),
+		SpringArm->GetComponentLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel1,
+		FCollisionShape::MakeSphere(50.0f),
+		Params
+	);
+
+	// 트레이싱에 성공한 경우
+	if (bHitDetected)
+	{
+		// 트레이싱된 물체가 플레이어뿐인지 검사
+		bool bOnlyPlayerDetected = true;
+		for (const FHitResult& Hit : HitResults)
+		{
+			if (Hit.GetComponent() != GetCapsuleComponent())
+			{
+				bOnlyPlayerDetected = false;
+				break;
+			}
+		}
+		
+		// 트레이싱된 물체가 플레이어뿐인 경우
+		// 카메라에 마스킹된 장애물들의 마스킹을 초기화
+		if (bOnlyPlayerDetected)
+		{
+			if (CameraMaskingObstacle.IsEmpty()) return;
+
+			// 카메라 마스킹된 장애물 배열을 모두 순회하여 마스킹 값을 1로 초기화 (불투명화)
+			for (TWeakObjectPtr<UPrimitiveComponent> HitComp : CameraMaskingObstacle)
+			{
+				const int32 Materials = HitComp->GetNumMaterials();
+				for (int32 MatIndex = 0; MatIndex < Materials; ++MatIndex)
+				{
+					UMaterialInstanceDynamic* DynamicMaterial = HitComp->CreateDynamicMaterialInstance(MatIndex, HitComp->GetMaterial(MatIndex));
+
+					if (DynamicMaterial)
+					{
+						DynamicMaterial->SetScalarParameterValue(TEXT("CameraMask"), 1.0f);
+					}
+				}
+			}
+			CameraMaskingObstacle.Empty();
+		}
+		else
+		{
+			// 충돌 배열을 모두 순회
+			for (FHitResult& HitResult : HitResults)
+			{
+				if (UPrimitiveComponent* HitComp = HitResult.GetComponent())
+				{
+					// 카메라에 마스킹된 장애물 배열에 추가
+					CameraMaskingObstacle.AddUnique(HitResult.GetComponent());
+
+					// 마스킹 값을 0으로 초기화 (투명화)
+					const int32 Materials = HitComp->GetNumMaterials();
+					for (int32 MatIndex = 0; MatIndex < Materials; ++MatIndex)
+					{
+						UMaterialInstanceDynamic* DynamicMaterial = HitComp->CreateDynamicMaterialInstance(MatIndex, HitComp->GetMaterial(MatIndex));
+
+						if (DynamicMaterial)
+						{
+							DynamicMaterial->SetScalarParameterValue(TEXT("CameraMask"), 0.0f);
+						}
+					}
+				}
+			}
+		}
+	}
 }

@@ -31,6 +31,11 @@ UPA_PawnCombatComponent* APA_CharacterBase::GetPawnCombatComponent() const
 	return nullptr;
 }
 
+UPA_PawnUIComponent* APA_CharacterBase::GetUIComponent() const
+{
+	return nullptr;
+}
+
 void APA_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

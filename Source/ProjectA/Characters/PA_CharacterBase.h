@@ -6,11 +6,12 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
-#include "Interface/PawnCombatInterface.h"
+#include "Interface/PA_PawnCombatInterface.h"
+#include "Interface/PA_PawnUIInterface.h"
 #include "PA_CharacterBase.generated.h"
 
 UCLASS()
-class PROJECTA_API APA_CharacterBase : public ACharacter, public IAbilitySystemInterface, public IPawnCombatInterface
+class PROJECTA_API APA_CharacterBase : public ACharacter, public IAbilitySystemInterface, public IPA_PawnCombatInterface, public IPA_PawnUIInterface
 {
 	GENERATED_BODY()
 
@@ -18,10 +19,15 @@ public:
 	APA_CharacterBase();
 	virtual void PostInitializeComponents() override;
 
-	/* ICombatInterface Interface */
 	// 전투 컴포넌트 가져오기 인터페이스 함수
+	/* ICombatInterface Interface */
 	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
 	/* ICombatInterface Interface */
+
+	// UI 컴포넌트 가져오기 인터페이스 함수
+	/* IPA_PawnUIInterface Interface */
+	virtual UPA_PawnUIComponent* GetUIComponent() const override;
+	/* IPA_PawnUIInterface Interface */
 
 protected:
 	virtual void BeginPlay() override;

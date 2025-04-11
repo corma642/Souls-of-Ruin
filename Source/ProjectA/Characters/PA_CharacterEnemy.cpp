@@ -3,13 +3,18 @@
 
 #include "Characters/PA_CharacterEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/Combat/PA_EnemyCombatComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Items/Weapons/PA_BaseWeapon.h"
 #include "DataAssets/StartUpData/DA_EnemyStartUpData.h"
 
+#include "Components/Combat/PA_EnemyCombatComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/UI/PA_EnemyUIComponent.h"
+#include "Components/WidgetComponent.h"
+
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+
+#include "Widgets/PA_BaseWidget.h"
 
 #include "Engine/AssetManager.h"
 
@@ -29,6 +34,13 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 
 	// 전투 컴포넌트
 	EnemyCombatComponent = CreateDefaultSubobject<UPA_EnemyCombatComponent>(TEXT("EnemyCombatComponent"));
+
+	// UI 컴포넌트
+	EnemyUIComponent = CreateDefaultSubobject<UPA_EnemyUIComponent>(TEXT("EnemyUIComponent"));
+
+	// 체력 바 위젯 컴포넌트
+	EnemyHealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHealthWidgetComponent"));
+	EnemyHealthWidgetComponent->SetupAttachment(GetMesh());
 }
 
 UPA_PawnCombatComponent* APA_CharacterEnemy::GetPawnCombatComponent() const
@@ -36,12 +48,25 @@ UPA_PawnCombatComponent* APA_CharacterEnemy::GetPawnCombatComponent() const
 	return EnemyCombatComponent;
 }
 
+UPA_PawnUIComponent* APA_CharacterEnemy::GetUIComponent() const
+{
+	return EnemyUIComponent;
+}
+
+UPA_EnemyUIComponent* APA_CharacterEnemy::GetEnemyUIComponent() const
+{
+	return EnemyUIComponent;
+}
+
 void APA_CharacterEnemy::OnEnemyDied(float InDuration, float InUpdateInterval, TSoftObjectPtr<class UNiagaraSystem> DissolveNiagara, FLinearColor DissolveNiagaraColor)
 {
 	// 적 캐릭터 무기 가져오기
-	if (APA_BaseWeapon* Weapon = EnemyCombatComponent->GetCharacterCurrentEquippingWeapon())
+	if (EnemyCombatComponent)
 	{
-		EnemyWeapon = Weapon;
+		if (APA_BaseWeapon* Weapon = EnemyCombatComponent->GetCharacterCurrentEquippingWeapon())
+		{
+			EnemyWeapon = Weapon;
+		}
 	}
 
 	// 애니메이션 중단
@@ -50,29 +75,52 @@ void APA_CharacterEnemy::OnEnemyDied(float InDuration, float InUpdateInterval, T
 	// 사망 머티리얼 효과 (디졸브) 재생
 	UpdateMaterialParameter(InDuration, InUpdateInterval);
 
+	// 액터가 소멸될 때 비동기 작업이 진행 중일 수 있으므로 약 참조 사용
+	TWeakObjectPtr<APA_CharacterEnemy> WeakTHis = this;
+
 	// 사망 디졸브 나이아가라 시스템 비동기 로딩
-	UAssetManager::GetStreamableManager().RequestAsyncLoad(
-		DissolveNiagara.ToSoftObjectPath(),
-		FStreamableDelegate::CreateLambda([this, DissolveNiagara, DissolveNiagaraColor]()
-			{
-				// 비동기 로딩된 디졸브 나이아가라 저장
-				UNiagaraSystem* DissolveNiagaraSystem = DissolveNiagara.Get();
+	if (!DissolveNiagara.IsNull())
+	{
+		UAssetManager::GetStreamableManager().RequestAsyncLoad(
+			DissolveNiagara.ToSoftObjectPath(),
+			FStreamableDelegate::CreateLambda([WeakTHis, DissolveNiagara, DissolveNiagaraColor]()
+				{
+					if (WeakTHis.IsValid())
+					{
+						// 비동기 로딩된 디졸브 나이아가라 저장
+						UNiagaraSystem* DissolveNiagaraSystem = DissolveNiagara.Get();
 
-				// 디졸브 나이아가라 생성 후 컴포넌트 저장
-				UNiagaraComponent* DissolveNiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
-					DissolveNiagaraSystem,
-					GetMesh(),
-					FName(),
-					FVector::ZeroVector,
-					FRotator::ZeroRotator,
-					EAttachLocation::KeepRelativeOffset,
-					true // 액터 제거 시 자동 제거
-				);
+						// 디졸브 나이아가라 생성 후 컴포넌트 저장
+						UNiagaraComponent* DissolveNiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
+							DissolveNiagaraSystem,
+							WeakTHis->GetMesh(),
+							FName(),
+							FVector::ZeroVector,
+							FRotator::ZeroRotator,
+							EAttachLocation::KeepRelativeOffset,
+							true // 액터 제거 시 자동 제거
+						);
 
-				// 입력받은 나이아가라 디졸브 색상으로 디졸브 색상 변경
-				DissolveNiagaraComp->SetNiagaraVariableLinearColor(TEXT("DissolveParticleColor"), DissolveNiagaraColor);
-			})
-	);
+						// 입력받은 나이아가라 디졸브 색상으로 디졸브 색상 변경
+						if (DissolveNiagaraComp)
+						{
+							DissolveNiagaraComp->SetNiagaraVariableLinearColor(TEXT("DissolveParticleColor"), DissolveNiagaraColor);
+						}
+					}
+				})
+		);
+	}
+}
+
+void APA_CharacterEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UPA_BaseWidget* HealthWidget = Cast<UPA_BaseWidget>(EnemyHealthWidgetComponent->GetUserWidgetObject()))
+	{
+		// 위젯 초기화
+		HealthWidget->InitEnemyCreatedWidget(this);
+	}
 }
 
 void APA_CharacterEnemy::PossessedBy(AController* NewController)

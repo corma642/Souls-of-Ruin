@@ -20,6 +20,7 @@ public class ProjectA : ModuleRules
             "MotionWarping",
             "AnimGraphRuntime",
             "Niagara",
+            "UMG",
         });
     }
 }

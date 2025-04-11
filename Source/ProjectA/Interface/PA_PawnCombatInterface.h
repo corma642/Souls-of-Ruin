@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "PawnCombatInterface.generated.h"
+#include "PA_PawnCombatInterface.generated.h"
 
 UINTERFACE(MinimalAPI)
-class UPawnCombatInterface : public UInterface
+class UPA_PawnCombatInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class PROJECTA_API IPawnCombatInterface
+class PROJECTA_API IPA_PawnCombatInterface
 {
 	GENERATED_BODY()
 

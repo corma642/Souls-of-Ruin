@@ -7,6 +7,11 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Components/UI/PA_PawnUIComponent.h"
+#include "Components/UI/PA_PlayerUIComponent.h"
+#include "Components/UI/PA_EnemyUIComponent.h"
+#include "Interface/PA_PawnUIInterface.h"
+
 #include "PA_FunctionLibrary.h"
 #include "PA_GameplayTags.h"
 
@@ -25,16 +30,39 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	if (!CachedPawnInterface.IsValid())
+	{
+		// 캐릭터 클래스는 IPA_PawnUIInterface를 상속받음
+		// 따라서 TWeakInterfacePtr 생성자 캐스팅으로 캐릭터의 UI 인터페이스 가져와 캐시 저장
+		CachedPawnInterface = TWeakInterfacePtr<IPA_PawnUIInterface>(Data.Target.GetAvatarActor());
+	}
+	check(CachedPawnInterface.IsValid());
+
+	// UI 인터페이스를 통해, UI 컴포넌트 가져옴
+	UPA_PawnUIComponent* UIComponent = CachedPawnInterface->GetUIComponent();
+	check(UIComponent);
+
 	// 현재 체력 변경
 	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
 	{
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth(), 0, GetMaxHealth()));
+
+		// 현재 체력 변경 브로드캐스트
+		UIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 	}
+
 	// 현재 스태미나 변경
 	else if (Data.EvaluatedData.Attribute == GetCurrentStaminaAttribute())
 	{
 		SetCurrentStamina(FMath::Clamp(GetCurrentStamina(), 0, GetMaxStamina()));
+
+		// 현재 스태미나 변경 브로드캐스트
+		if (UPA_PlayerUIComponent* PlayerUIComponent = CachedPawnInterface->GetPlayerUIComponent())
+		{
+			PlayerUIComponent->OnCurrentStaminaChanged.Broadcast(GetCurrentStamina() / GetMaxStamina());
+		}
 	}
+
 	// 최대 이동속도 변경
 	else if (Data.EvaluatedData.Attribute == GetMaxMovementSpeedAttribute())
 	{
@@ -46,11 +74,15 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 			CharacterMovement->MaxWalkSpeed = GetMaxMovementSpeed();
 		}
 	}
+
 	// 받은 피해량 변경
 	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
 	{
 		// 현재 체력에서 받은 피해량 만큼 차감
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetDamageTaken(), 0.0f, GetMaxHealth()));
+
+		// 현재 체력 변경 브로드캐스트
+		UIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
 
 		GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Cyan, FString::Printf(TEXT("MaxHP: %f, CurrentHP: %f"), GetMaxHealth(), GetCurrentHealth()));
 

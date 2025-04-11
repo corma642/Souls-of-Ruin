@@ -3,7 +3,7 @@
 
 #include "AbilitySystem/Abilities/PA_GameplayAbility.h"
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
-#include "Interface/PawnCombatInterface.h"
+#include "Interface/PA_PawnCombatInterface.h"
 #include "AbilitySystemBlueprintLibrary.h"
 
 #include "PA_FunctionLibrary.h"
@@ -90,8 +90,8 @@ void UPA_GameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 
 UPA_PawnCombatComponent* UPA_GameplayAbility::GetPawnCombatComponentFromActorInfo() const
 {
-	//// 폰 전투 컴포넌트 인터페이스를 통해, 플레이어 or 적의 전투 컴포넌트를 반환
-	if (UPA_PawnCombatComponent* PawnCombatComponent = Cast<IPawnCombatInterface>(GetAvatarActorFromActorInfo())->GetPawnCombatComponent())
+	// 폰 전투 컴포넌트 인터페이스를 통해, 플레이어 or 적의 전투 컴포넌트를 반환
+	if (UPA_PawnCombatComponent* PawnCombatComponent = Cast<IPA_PawnCombatInterface>(GetAvatarActorFromActorInfo())->GetPawnCombatComponent())
 	{
 		return PawnCombatComponent;
 	}
