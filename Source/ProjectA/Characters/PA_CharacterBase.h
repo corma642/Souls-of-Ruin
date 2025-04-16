@@ -42,6 +42,8 @@ public:
 
 	class UPA_AttributeSetBase* GetAttributeSet() const { return AttributeSet; }
 
+	class UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
+
 protected:
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -50,6 +52,9 @@ protected:
 
 	UPROPERTY(Transient, EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | AbilitySystem")
 	TObjectPtr<class UPA_AttributeSetBase> AttributeSet;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | MotionWarping")
+	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComponent;
 
 
 	///////////////////////////////////////////////////////////////////////////

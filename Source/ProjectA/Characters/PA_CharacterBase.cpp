@@ -6,6 +6,8 @@
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
 
+#include "MotionWarpingComponent.h"
+
 #include "DataAssets/StartUpData/DA_BaseStartUpData.h"
 
 APA_CharacterBase::APA_CharacterBase()
@@ -18,6 +20,8 @@ APA_CharacterBase::APA_CharacterBase()
 	AbilitySystemComponent = CreateDefaultSubobject<UPA_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	AttributeSet = CreateDefaultSubobject<UPA_AttributeSetBase>(TEXT("AttributeSet"));
+
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 }
 
 void APA_CharacterBase::PostInitializeComponents()

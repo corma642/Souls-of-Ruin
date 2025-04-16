@@ -3,3 +3,7 @@
 
 #include "Controllers/PA_PlayerController.h"
 
+APA_PlayerController::APA_PlayerController()
+{
+	PlayerTeamID = FGenericTeamId(0);
+}
