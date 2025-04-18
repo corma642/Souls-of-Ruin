@@ -45,6 +45,8 @@ namespace PA_GameplayTags
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon_Goblin);
 
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_Boundary);
+
 
 	/* Shared Tags */
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Ability_HitReact);

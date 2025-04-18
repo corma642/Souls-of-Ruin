@@ -16,6 +16,9 @@ public:
 	// 액터의 ASC 가져오기
 	static class UPA_AbilitySystemComponent* NativeGetPAAbilitySystemComponentFromActor(AActor* InActor);
 
+	// 액터의 특정 태그 보유 여부
+	static bool NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck);
+
 public:
 	// 액터에 태그 추가하는 함수 (중복인 경우 패스)
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")

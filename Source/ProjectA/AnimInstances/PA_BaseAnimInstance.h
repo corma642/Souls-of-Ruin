@@ -16,6 +16,10 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
+	bool DoesOwnerHaveTag(const FGameplayTag TagToCheck) const;
+
+protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Reference")
 	TObjectPtr<class APA_CharacterBase> OwningCharacter;
 

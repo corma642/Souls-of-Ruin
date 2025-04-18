@@ -6,6 +6,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "KismetAnimationLibrary.h"
 
+#include "PA_FunctionLibrary.h"
+#include "PA_GameplayTags.h"
+
 void UPA_BaseAnimInstance::NativeInitializeAnimation()
 {
 	OwningCharacter = Cast<APA_CharacterBase>(TryGetPawnOwner());
@@ -28,4 +31,13 @@ void UPA_BaseAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	
 		bIsFalling = MovementComponent->IsFalling();
 	}
+}
+
+bool UPA_BaseAnimInstance::DoesOwnerHaveTag(const FGameplayTag TagToCheck) const
+{
+	if (APawn* OwningPawn = TryGetPawnOwner())
+	{
+		return UPA_FunctionLibrary::NativeDoesActorHaveTag(OwningPawn, TagToCheck);
+	}
+	return false;
 }

@@ -21,6 +21,7 @@ public class ProjectA : ModuleRules
             "AnimGraphRuntime",
             "Niagara",
             "UMG",
+            "AIModule",
         });
     }
 }

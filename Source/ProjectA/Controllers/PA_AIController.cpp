@@ -2,6 +2,8 @@
 
 
 #include "Controllers/PA_AIController.h"
+#include "Characters/PA_CharacterEnemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
 #include "Perception/AISenseConfig_Sight.h"
@@ -28,7 +30,7 @@ APA_AIController::APA_AIController(const FObjectInitializer& ObjectInitializer)
 	// 시야 범위 설정
 	AISenseConfig_Sight->SightRadius = 500.0f; // 시야 반경
 	AISenseConfig_Sight->LoseSightRadius = 1000.0f; // 시야 상실 반경
-	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 60.0f; // 주변 시야 각도
+	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 90.0f; // 주변 시야 각도
 
 
 	EnemyPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("EnemyPerceptionComponent"));
@@ -96,19 +98,31 @@ void APA_AIController::OnPossess(APawn* InPawn)
 	if (EnemyBehaviorTree)
 	{
 		RunBehaviorTree(EnemyBehaviorTree);
+
+		// 적 캐릭터의 기본 최대 이동속도 저장
+		if (APA_CharacterEnemy* Enemy = Cast<APA_CharacterEnemy>(InPawn))
+		{
+			if (UBlackboardComponent* BBComp = GetBlackboardComponent())
+			{
+				BBComp->SetValueAsFloat(
+					TEXT("OriginalMaxWalkSpeed"),
+					Enemy->GetMovementComponent()->GetMaxSpeed()
+				);
+			}
+		}
 	}
 }
 
 void APA_AIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimuls)
 {
-	if (UBlackboardComponent* BBComponent = GetBlackboardComponent())
+	if (UBlackboardComponent* BBComp = GetBlackboardComponent())
 	{
 		// TargetActor를 감지한 적대적 대상으로 설정
-		if (!BBComponent->GetValueAsObject(TEXT("TargetActor")))
+		if (!BBComp->GetValueAsObject(TEXT("TargetActor")))
 		{
 			if (Stimuls.WasSuccessfullySensed() && Actor)
 			{
-				BBComponent->SetValueAsObject(TEXT("TargetActor"), Actor);
+				BBComp->SetValueAsObject(TEXT("TargetActor"), Actor);
 			}
 		}
 	}

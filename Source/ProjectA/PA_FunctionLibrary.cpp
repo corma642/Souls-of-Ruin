@@ -22,6 +22,12 @@ UPA_AbilitySystemComponent* UPA_FunctionLibrary::NativeGetPAAbilitySystemCompone
 	return CastChecked<UPA_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
 }
 
+bool UPA_FunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck)
+{
+	UPA_AbilitySystemComponent* ASC = NativeGetPAAbilitySystemComponentFromActor(InActor);
+	return ASC->HasMatchingGameplayTag(TagToCheck);
+}
+
 void UPA_FunctionLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag InTag)
 {
 	UPA_AbilitySystemComponent* ASC = NativeGetPAAbilitySystemComponentFromActor(InActor);

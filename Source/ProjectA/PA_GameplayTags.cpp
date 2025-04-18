@@ -44,6 +44,8 @@ namespace PA_GameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon_Goblin, "Enemy.Weapon.Goblin");
 
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Boundary, "Enemy.Status.Boundary");
+
 
 	/* Shared Tags */
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_HitReact, "Shared.Ability.HitReact");
