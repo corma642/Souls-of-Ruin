@@ -29,6 +29,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom | Ability", meta = (ApplyLevel = "1"))
 	void RemoveGrantedPlayerWeaponAbilities();
 
+public:
+	// 태그를 통한 어빌리티 활성화 시도 함수
+	UFUNCTION(BlueprintCallable, Category = "Custom | Ability")
+	bool TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate);
+
 private:
 	// 부여한 플레이어 무기 어빌리티
 	TArray<FGameplayAbilitySpecHandle> GrantedPlayerWeaponAbilities;

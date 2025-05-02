@@ -42,10 +42,12 @@ namespace PA_GameplayTags
 
 	/* Enemy Tags */
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Ability);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Ability_MeleeAttack);
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon_Goblin);
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_Boundary);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_UnderAttack);
 
 
 	/* Shared Tags */

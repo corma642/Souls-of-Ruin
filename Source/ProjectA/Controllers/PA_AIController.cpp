@@ -12,7 +12,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-// 기본 AI 길찾기 궂웅 우회(UCrowdFollowingComponent)로 설정
+// 기본 AI 길찾기 군중 우회(UCrowdFollowingComponent)로 설정
 APA_AIController::APA_AIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
@@ -98,18 +98,6 @@ void APA_AIController::OnPossess(APawn* InPawn)
 	if (EnemyBehaviorTree)
 	{
 		RunBehaviorTree(EnemyBehaviorTree);
-
-		// 적 캐릭터의 기본 최대 이동속도 저장
-		if (APA_CharacterEnemy* Enemy = Cast<APA_CharacterEnemy>(InPawn))
-		{
-			if (UBlackboardComponent* BBComp = GetBlackboardComponent())
-			{
-				BBComp->SetValueAsFloat(
-					TEXT("OriginalMaxWalkSpeed"),
-					Enemy->GetMovementComponent()->GetMaxSpeed()
-				);
-			}
-		}
 	}
 }
 

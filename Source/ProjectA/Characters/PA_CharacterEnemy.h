@@ -82,4 +82,12 @@ protected:
 	// 적 체력 바 위젯 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | UI")
 	TObjectPtr<class UWidgetComponent> EnemyHealthWidgetComponent;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Attributes */
+protected:
+	// 최대 이동속도 변경 함수
+	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+
 };

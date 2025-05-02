@@ -11,6 +11,9 @@
 #include "Components/UI/PA_EnemyUIComponent.h"
 #include "Components/WidgetComponent.h"
 
+#include "AbilitySystem/PA_AbilitySystemComponent.h"
+#include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
+
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
@@ -41,6 +44,9 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 	// 체력 바 위젯 컴포넌트
 	EnemyHealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHealthWidgetComponent"));
 	EnemyHealthWidgetComponent->SetupAttachment(GetMesh());
+
+	// 최대 이동속도 변경 콜백 함수 바인딩
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterEnemy::OnMaxMovementSpeedChanged);
 }
 
 UPA_PawnCombatComponent* APA_CharacterEnemy::GetPawnCombatComponent() const
@@ -191,7 +197,7 @@ void APA_CharacterEnemy::InitEnemyStartUpData()
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 		CharacterStartUpData.ToSoftObjectPath(),
 		FStreamableDelegate::CreateLambda(
-			[&]()
+			[this]()
 			{
 				if (UDA_EnemyStartUpData* LoadedData = Cast<UDA_EnemyStartUpData>(CharacterStartUpData.Get()))
 				{
@@ -200,4 +206,10 @@ void APA_CharacterEnemy::InitEnemyStartUpData()
 			}
 		)
 	);
+}
+
+void APA_CharacterEnemy::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	// 전달받은 최대 이동속도로 갱신
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }

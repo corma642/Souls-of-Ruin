@@ -77,3 +77,27 @@ void UPA_AbilitySystemComponent::RemoveGrantedPlayerWeaponAbilities()
 
 	GrantedPlayerWeaponAbilities.Empty();
 }
+
+bool UPA_AbilitySystemComponent::TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate)
+{
+	check(AbilityTagToActivate.IsValid());
+
+	// 태그와 매칭되는 활성화 가능한 어빌리티의 어빌리티 스펙 배열을 반환
+	TArray<FGameplayAbilitySpec*> FoundAbilitySpecs;
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTagToActivate.GetSingleTagContainer(), FoundAbilitySpecs);
+
+	// 어빌리티 중 랜덤으로 1개 활성화
+	if (!FoundAbilitySpecs.IsEmpty())
+	{
+		const int32 RandIndex = FMath::RandRange(0, FoundAbilitySpecs.Num() - 1);
+		const FGameplayAbilitySpec* SpecToActivate = FoundAbilitySpecs[RandIndex];
+		check(SpecToActivate);
+
+		if (!SpecToActivate->IsActive())
+		{
+			return TryActivateAbility(SpecToActivate->Handle);
+		}
+	}
+
+	return false;
+}

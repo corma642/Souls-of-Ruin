@@ -1,6 +1,7 @@
 
 #include "PA_FunctionLibrary.h"
 #include "Interface/PA_PawnCombatInterface.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -62,4 +63,21 @@ UPA_PawnCombatComponent* UPA_FunctionLibrary::BP_GetPawnCombatComponentFromActor
 		return PawnCombatComponent;
 	}
 	return nullptr;
+}
+
+bool UPA_FunctionLibrary::IsTargetPawnHostile(const APawn* MyPawn, const APawn* TargetPawn)
+{
+	check(MyPawn || TargetPawn);
+
+	// 두 폰의 일반 팀 ID를 캐스팅을 통해 가져옴
+	const IGenericTeamAgentInterface* MyPawnTeamAgent = Cast<IGenericTeamAgentInterface>(MyPawn->GetController());
+	const IGenericTeamAgentInterface* TargetPawnTeamAgent = Cast<IGenericTeamAgentInterface>(TargetPawn->GetController());
+
+	if (MyPawnTeamAgent && TargetPawnTeamAgent)
+	{
+		// 두 폰의 일반 팀 ID의 동일 여부를 반환 ()
+		return MyPawnTeamAgent->GetGenericTeamId() != TargetPawnTeamAgent->GetGenericTeamId();
+	}
+
+	return false;
 }

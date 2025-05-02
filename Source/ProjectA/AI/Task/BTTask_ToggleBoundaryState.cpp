@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
+#include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
 
 #include "PA_FunctionLibrary.h"
 #include "PA_GameplayTags.h"
@@ -60,11 +61,14 @@ void UBTTask_ToggleBoundaryState::OnExecuteTask()
 		CachedMovementComp->bOrientRotationToMovement = true;
 
 		// 최대 이동속도 원상복구
-		if (AAIController* AIController = Cast<AAIController>(CachedEnemyCharacter->GetController()))
+		if (!bShouldChangeMaxWalkSpeed)
 		{
-			if (UBlackboardComponent* BBComp = AIController->GetBlackboardComponent())
+			if (AAIController* AIController = Cast<AAIController>(CachedEnemyCharacter->GetController()))
 			{
-				CachedMovementComp->MaxWalkSpeed = BBComp->GetValueAsFloat(InOriginalMaxWalkSpeedKey.SelectedKeyName);
+				if (UBlackboardComponent* BBComp = AIController->GetBlackboardComponent())
+				{
+					CachedMovementComp->MaxWalkSpeed = CachedEnemyCharacter->GetAttributeSet()->GetMaxMovementSpeed();
+				}
 			}
 		}
 

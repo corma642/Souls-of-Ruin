@@ -32,5 +32,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
 	static class UPA_PawnCombatComponent* BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType);
 
+	// 일반 팀 ID를 통해, 대상이 적대적인지 확인하는 함수
+	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
+	static bool IsTargetPawnHostile(const APawn* MyPawn, const APawn* TargetPawn);
 
 };

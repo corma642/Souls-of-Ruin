@@ -25,7 +25,7 @@ public:
 
 	// 상호작용 시작 이벤트
 	FOnTargetInteractedDelegate OnWeaponTargetHitStart;
-	
+
 	// 상호작용 종료 이벤트
 	FOnTargetInteractedDelegate OnWeaponTargetHitEnd;
 

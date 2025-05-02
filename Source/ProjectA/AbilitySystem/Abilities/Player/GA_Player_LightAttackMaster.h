@@ -12,6 +12,8 @@ class PROJECTA_API UGA_Player_LightAttackMaster : public UPA_PlayerGameplayAbili
 	GENERATED_BODY()
 	
 public:
+    UGA_Player_LightAttackMaster();
+
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
     virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 

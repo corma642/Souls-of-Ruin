@@ -41,10 +41,12 @@ namespace PA_GameplayTags
 
 	/* Enemy Tags */
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Ability, "Enemy.Ability");
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Ability_MeleeAttack, "Enemy.Ability.MeleeAttack");
 
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon_Goblin, "Enemy.Weapon.Goblin");
 
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_Boundary, "Enemy.Status.Boundary");
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Status_UnderAttack, "Enemy.Status.UnderAttack");
 
 
 	/* Shared Tags */

@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 
+#include "PA_FunctionLibrary.h"
+
 APA_BaseWeapon::APA_BaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -47,7 +49,7 @@ void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (HitPawn != WeaponOwningPawn)
+		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
 			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
 		}
@@ -61,7 +63,7 @@ void APA_BaseWeapon::OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* Overlappe
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (HitPawn != WeaponOwningPawn)
+		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
 			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
 		}
@@ -76,7 +78,7 @@ void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* Overla
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (HitPawn != WeaponOwningPawn)
+		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
 			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
 		}
@@ -90,7 +92,7 @@ void APA_BaseWeapon::OnRightCollisionBoxEndOverlap(UPrimitiveComponent* Overlapp
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (HitPawn != WeaponOwningPawn)
+		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
 			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
 		}

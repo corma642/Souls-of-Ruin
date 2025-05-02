@@ -12,6 +12,8 @@ class PROJECTA_API UGA_Player_Roll : public UPA_PlayerGameplayAbility
 	GENERATED_BODY()
 	
 public:
+	UGA_Player_Roll();
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
@@ -27,7 +29,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UAbilityTask_PlayMontageAndWait> MontageTask = nullptr;
 
-	// ÄÞº¸ °ø°Ý ¸ùÅ¸ÁÖ ¸Ê
+	// ±¸¸£±â ¸ùÅ¸ÁÖ
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	TObjectPtr<class UAnimMontage> RollMontage;
 
