@@ -16,14 +16,27 @@ UGA_Player_Roll::UGA_Player_Roll()
 
 void UGA_Player_Roll::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	if (DelayTimerHandle.IsValid())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+		return;
+	}
+
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	// Å° ¾ÃÈû ¹æÁö¸¦ À§ÇØ, 0.05ÃÊ µô·¹ÀÌ ÈÄ ¸ùÅ¸ÁÖ Àç»ý
-	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &UGA_Player_Roll::PlayRollMontage, 0.05f, false);
+	PlayRollMontage();
 }
 
 void UGA_Player_Roll::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	if (!DelayTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, FTimerDelegate::CreateLambda([&]()
+			{
+				GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+			}
+		), 0.5f, false, -1.0f);
+	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -59,7 +72,6 @@ void UGA_Player_Roll::ComputeRollDirectionAndDistance()
 		FVector::ZeroVector,
 		UKismetMathLibrary::MakeRotFromX(Direction)
 	);
-
 
 	FHitResult HitResult;
 

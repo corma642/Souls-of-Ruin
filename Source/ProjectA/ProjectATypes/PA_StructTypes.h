@@ -22,7 +22,6 @@ public:
 	bool IsValid() const;
 };
 
-
 // 플레이어 무기 데이터
 USTRUCT(BlueprintType)
 struct FPlayerWeaponData

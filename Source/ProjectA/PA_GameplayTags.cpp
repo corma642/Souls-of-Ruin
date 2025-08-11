@@ -11,6 +11,7 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Equip_DualWield, "InputTag.Equip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_UnEquip_DualWield, "InputTag.UnEquip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_Light_DualWield, "InputTag.Attack.Light.DualWield");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_SprintAttack_DualWield, "InputTag.Attack.SprintAttack.DualWield");
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable, "InputTag.Toggleable");
 
@@ -23,6 +24,7 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Equip_DualWield, "Player.Ability.Equip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_UnEquip_DualWield, "Player.Ability.UnEquip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Attack_Light_DualWield, "Player.Ability.Attack.Light.DualWield");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Attack_SprintAttack_DualWield, "Player.Ability.Attack.SprintAttack.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_HitPause, "Player.Ability.HitPause");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Roll, "Player.Ability.Roll");
 

@@ -53,6 +53,11 @@ void UPA_FunctionLibrary::RemoveGameplayTagToActorIfFound(AActor* InActor, FGame
 	}
 }
 
+bool UPA_FunctionLibrary::DoesActorHaveTag(AActor* InActor, FGameplayTag InTag)
+{
+	return NativeDoesActorHaveTag(InActor, InTag);
+}
+
 UPA_PawnCombatComponent* UPA_FunctionLibrary::BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType)
 {
 	UPA_PawnCombatComponent* PawnCombatComponent = NativeGetPawnCombatComponentFromActor(InActor);

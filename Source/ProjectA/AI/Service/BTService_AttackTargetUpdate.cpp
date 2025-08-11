@@ -4,7 +4,6 @@
 #include "AI/Service/BTService_AttackTargetUpdate.h"
 #include "Characters/PA_CharacterEnemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "MotionWarpingComponent.h"
 #include "AIController.h"
 
 UBTService_AttackTargetUpdate::UBTService_AttackTargetUpdate()
@@ -29,13 +28,4 @@ void UBTService_AttackTargetUpdate::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		CachedEnemyCharacter = Cast<APA_CharacterEnemy>(OwningPawn);
 	}
 	check(CachedEnemyCharacter.IsValid());
-
-	// 공격 타깃의 위치로 모션 워핑 타깃 업데이트
-	if (AActor* TargetActor = Cast<AActor>(BBComp->GetValueAsObject(InTargetActorKey.SelectedKeyName)))
-	{
-		CachedEnemyCharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
-			TEXT("AttackTarget"),
-			TargetActor->GetActorLocation()
-		);
-	}
 }

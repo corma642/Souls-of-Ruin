@@ -42,6 +42,6 @@ protected:
 	float RollDistance = 500.f;
 
 private:
-	// 시작 딜레이 타이머 핸들
+	// 재사용 딜레이 타이머 핸들
 	FTimerHandle DelayTimerHandle;
 };

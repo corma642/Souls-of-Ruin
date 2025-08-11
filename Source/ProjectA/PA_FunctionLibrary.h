@@ -28,6 +28,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
 	static void RemoveGameplayTagToActorIfFound(AActor* InActor, FGameplayTag InTag);
 
+	// 액터의 특정 태그 보유 여부
+	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
+	static bool DoesActorHaveTag(AActor* InActor, FGameplayTag InTag);
+
 	// 폰 전투 컴포넌트 가져오기
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
 	static class UPA_PawnCombatComponent* BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType);
