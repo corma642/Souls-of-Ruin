@@ -14,7 +14,14 @@ class PROJECTA_API UBTService_LookAtTarget : public UBTService
 public:
 	UBTService_LookAtTarget();
 
+private:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+	// 블랙보드에 있는 데이터에 접근할 수 있도록 초기화하는 함수
+	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
+	
+	// 이 서비스의 정적 설명을 반환하는 함수
+	virtual FString GetStaticDescription() const override;
 
 private:
 	// 타깃 블랙보드 키

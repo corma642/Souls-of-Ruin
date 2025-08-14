@@ -43,7 +43,7 @@ UPA_PawnUIComponent* APA_CharacterBase::GetUIComponent() const
 void APA_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 UAbilitySystemComponent* APA_CharacterBase::GetAbilitySystemComponent() const
@@ -60,4 +60,13 @@ void APA_CharacterBase::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+}
+
+void APA_CharacterBase::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
+{
+}
+
+void APA_CharacterBase::SetMaxMovementSpeedAndAttribute(float NewSpeed)
+{
+	AbilitySystemComponent->SetNumericAttributeBase(AttributeSet->GetMaxMovementSpeedAttribute(), NewSpeed);
 }

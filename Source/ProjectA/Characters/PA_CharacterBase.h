@@ -40,9 +40,9 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/* IAbilitySystemInterface */
 
-	class UPA_AttributeSetBase* GetAttributeSet() const { return AttributeSet; }
+	virtual class UPA_AttributeSetBase* GetAttributeSet() const { return AttributeSet; }
 
-	class UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
+	virtual class UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;
@@ -55,6 +55,17 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | MotionWarping")
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComponent;
+
+
+	///////////////////////////////////////////////////////////////////////////
+	/* Attributes */
+protected:
+	// 최대 이동속도 변경 함수
+	virtual void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+
+	// 블루프린트에서 직접 최대 이동속도 변경 시, 이 함수를 호출해서 AttributeSet과 동기화
+	UFUNCTION(BlueprintCallable, Category = "Custom | Attributes")
+	virtual void SetMaxMovementSpeedAndAttribute(float NewSpeed);
 
 
 	///////////////////////////////////////////////////////////////////////////

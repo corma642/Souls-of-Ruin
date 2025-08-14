@@ -19,6 +19,9 @@
 
 #include "Widgets/PA_BaseWidget.h"
 
+#include "Controllers/PA_AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
 #include "Engine/AssetManager.h"
 
 APA_CharacterEnemy::APA_CharacterEnemy()
@@ -32,7 +35,7 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 180.f, 0.f);
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 350.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
 	// 전투 컴포넌트

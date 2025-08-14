@@ -94,11 +94,7 @@ void APA_AIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	// 비헤이비어 트리 수행
-	if (EnemyBehaviorTree)
-	{
-		RunBehaviorTree(EnemyBehaviorTree);
-	}
+	// 블루프린트에서 RunBehaviorTree를 통해 비헤이비어 트리 시작
 }
 
 void APA_AIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimuls)

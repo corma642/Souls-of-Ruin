@@ -88,6 +88,6 @@ protected:
 	/* Attributes */
 protected:
 	// 최대 이동속도 변경 함수
-	void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
+	virtual void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data) override;
 
 };

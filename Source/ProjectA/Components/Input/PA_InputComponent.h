@@ -14,16 +14,16 @@ class PROJECTA_API UPA_InputComponent : public UEnhancedInputComponent
 	
 public:
 	// 기본 입력 액션 바인딩 함수
-	template<class UserObject, typename CallbackFunc>
+	template<typename UserObject, typename CallbackFunc>
 	void NativeInputActionBind(const UDA_InputConfig* InInputConfig, const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func);
 
 	// 어빌리티 입력 액션 바인딩 함수
-	template<class UserObject, typename CallbackFunc>																						   
+	template<typename UserObject, typename CallbackFunc>
 	void AbilityInputActionBind(const UDA_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc);
 };
 
 // 기본 입력 액션 바인딩 구현
-template<class UserObject, typename CallbackFunc>
+template<typename UserObject, typename CallbackFunc>
 inline void UPA_InputComponent::NativeInputActionBind(const UDA_InputConfig* InInputConfig, const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func)
 {
 	check(InInputConfig);
@@ -37,7 +37,7 @@ inline void UPA_InputComponent::NativeInputActionBind(const UDA_InputConfig* InI
 }
 
 // 어빌리티 입력 액션 바인딩 구현
-template<class UserObject, typename CallbackFunc>
+template<typename UserObject, typename CallbackFunc>
 inline void UPA_InputComponent::AbilityInputActionBind(const UDA_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc)
 {
 	check(InInputConfig);
