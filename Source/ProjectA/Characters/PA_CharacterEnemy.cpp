@@ -28,6 +28,9 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 {
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;

@@ -1,0 +1,111 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "AI/Task/BTTask_ActivateAbilityByTag.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Characters/PA_CharacterEnemy.h"
+#include "AbilitySystem/PA_AbilitySystemComponent.h"
+#include "AIController.h"
+#include "MotionWarpingComponent.h"
+
+#include "PA_GameplayTags.h"
+
+UBTTask_ActivateAbilityByTag::UBTTask_ActivateAbilityByTag()
+{
+	// BT에서 사용할 노드 이름 설정	
+	NodeName = TEXT("Activate Ability By Tag");
+
+	// / 필수 추가 / 기본 태스크가 제대로 동작하도록 플래그를 알리는 매크로
+	INIT_TASK_NODE_NOTIFY_FLAGS();
+
+	// 블랙보드 키 필터 설정
+	TargetActorKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(ThisClass, TargetActorKey), AActor::StaticClass());
+}
+
+EBTNodeResult::Type UBTTask_ActivateAbilityByTag::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	// 공격 중 상태 키를 true로 설정
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsAttackingKey.SelectedKeyName, true);
+
+	// AI 캐릭터 가져오기
+	AICharacter = Cast<APA_CharacterEnemy>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!AICharacter)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	// 공격 대상 가져오기
+	TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
+	if (!TargetActor)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	// 적 근접 공격 어빌리티 활성화
+	Cast<UPA_AbilitySystemComponent>(AICharacter->GetAbilitySystemComponent())->TryActivateAbilityByTag(PA_GameplayTags::Enemy_Ability_MeleeAttack);
+
+	return EBTNodeResult::InProgress; // 태스크 진행중으로 종료
+	// TickTask 함수에서 이후 처리
+}
+
+void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	// AI 캐릭터나 공격 대상이 유효하지 않으면 태스크를 실패로 종료
+	if (!AICharacter || !TargetActor)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
+
+	// 공격 중 상태를 확인
+	bool bIsAttacking = OwnerComp.GetBlackboardComponent()->GetValueAsBool(IsAttackingKey.SelectedKeyName);
+
+	// 공격 중이 아니면 태스크를 완료
+	if (!bIsAttacking)
+	{
+		// 공격 모션 워핑 제거
+		UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
+		if (MotionWarpingComponent)
+		{
+			MotionWarpingComponent->RemoveWarpTarget(TEXT("LocationTarget"));
+			MotionWarpingComponent->RemoveWarpTarget(TEXT("RotationTarget"));
+		}
+
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
+	else
+	{
+		// 공격 모션 워핑 위치 업데이트
+		AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
+			"LocationTarget",
+			GetLocationWarpTarget()
+		);
+
+		// 공격 모션 워핑 회전 업데이트
+		AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
+			"RotationTarget",
+			GetRotationWarpTarget()
+		);
+	}
+}
+
+FVector UBTTask_ActivateAbilityByTag::GetLocationWarpTarget()
+{
+	if (TargetActor == nullptr) return FVector();
+
+	const FVector Location = AICharacter->GetActorLocation();
+	const FVector TargetLocation = TargetActor->GetActorLocation();
+
+	// 목표 위치로의 방향을 구함
+	FVector TargetToMe = (Location - TargetLocation).GetSafeNormal();
+
+	// 목표 위치로의 방향에 떨어질 거리를 곱해서 목표 위치로부터의 떨어진 거리를 구함
+	TargetToMe *= WarpTargetDistance;
+
+	// 목표 위치에 내 방향으로부터 떨어질 거리를 더한 위치를 반환
+	return TargetLocation + TargetToMe;
+}
+
+FVector UBTTask_ActivateAbilityByTag::GetRotationWarpTarget()
+{
+	return TargetActor->GetActorLocation();
+}
