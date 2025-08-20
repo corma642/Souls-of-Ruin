@@ -53,9 +53,9 @@ void UPA_FunctionLibrary::RemoveGameplayTagToActorIfFound(AActor* InActor, FGame
 	}
 }
 
-bool UPA_FunctionLibrary::DoesActorHaveTag(AActor* InActor, FGameplayTag InTag)
+void UPA_FunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag InTag, EPA_ConfirmType& OutConfirmType)
 {
-	return NativeDoesActorHaveTag(InActor, InTag);
+	OutConfirmType = NativeDoesActorHaveTag(InActor, InTag) ? EPA_ConfirmType::Yes : EPA_ConfirmType::No;
 }
 
 UPA_PawnCombatComponent* UPA_FunctionLibrary::BP_GetPawnCombatComponentFromActor(AActor* InActor, EPA_ValidType& OutValidType)
@@ -85,4 +85,48 @@ bool UPA_FunctionLibrary::IsTargetPawnHostile(const APawn* MyPawn, const APawn* 
 	}
 
 	return false;
+}
+
+int UPA_FunctionLibrary::ComputeHitReactDirection(AActor* InAttacker, AActor* InVictim)
+{
+	check(InAttacker || InVictim);
+
+	// 피해자(공격 받는 액터)의 전방 벡터
+	const FVector VictimForward = InVictim->GetActorForwardVector();
+
+	// 공격자의 위치에서 피해자를 바라본 벡터(정규화)
+	const FVector AttackerToVictim = (InAttacker->GetActorLocation() - InVictim->GetActorLocation()).GetSafeNormal();
+
+	// 두 벡터의 내적 결과를 저장
+	const float DotResult = FVector::DotProduct(VictimForward, AttackerToVictim);
+
+	// Acos를 통해 코사인을 제거 (반환값은 라디안으로 나옴)
+	const float Radian = FMath::Acos(DotResult);
+
+	// 라디안 값을 각도로 변환 (0 ~ 180의 소수로 나오게 됨)
+	float Degree = FMath::RadiansToDegrees(Radian);
+
+	// 두 벡터를 외적한다.
+	const FVector CrossResult = FVector::CrossProduct(VictimForward, AttackerToVictim);
+
+	// 외적한 벡터의 Z값이 0보다 작으면, 왼쪽을 의미한다.
+	if (CrossResult.Z <= 0.0f)
+	{
+		Degree *= -1;
+	}
+
+	// 구한 각도에 맞춰서 실행할 몽타주 번호 반환
+	// 앞쪽에서 맞음
+	if (Degree >= -45.f && Degree <= 45.f)	return 0;
+
+	// 왼쪽에서 맞음
+	if (Degree < -45.f && Degree >= -135.f)	return 1;
+
+	// 오른쪽에서 맞음
+	if (Degree > 45.f && Degree <= 135.f)	return 2;
+
+	// 뒤쪽에서 맞음
+	if (Degree < -135.f || Degree > 135.f)	return 3;
+
+	return 0;
 }

@@ -29,8 +29,8 @@ public:
 	static void RemoveGameplayTagToActorIfFound(AActor* InActor, FGameplayTag InTag);
 
 	// 액터의 특정 태그 보유 여부
-	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
-	static bool DoesActorHaveTag(AActor* InActor, FGameplayTag InTag);
+	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary", meta = (DisplayName = "Does Actor Have Tag", ExpandEnumAsExecs = "OutConfirmType"))
+	static void BP_DoesActorHaveTag(AActor* InActor, FGameplayTag InTag, EPA_ConfirmType& OutConfirmType);
 
 	// 폰 전투 컴포넌트 가져오기
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
@@ -40,4 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
 	static bool IsTargetPawnHostile(const APawn* MyPawn, const APawn* TargetPawn);
 
+	// 피격 액션 방향 구하는 함수 [0: 앞쪽 피격, 1: 왼쪽 피격, 2: 오른쪽 피격, 3: 뒤쪽 피격]
+	UFUNCTION(BlueprintPure, Category = "Custom | FunctionLibrary")
+	static int ComputeHitReactDirection(AActor* InAttacker, AActor* InVictim);
+	
 };

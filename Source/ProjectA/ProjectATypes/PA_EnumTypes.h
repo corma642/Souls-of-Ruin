@@ -1,5 +1,13 @@
 #pragma once
 
+// 확인 여부 열거형
+UENUM()
+enum class EPA_ConfirmType : uint8
+{
+	Yes,
+	No,
+};
+
 // 유효 여부 열거형
 UENUM()
 enum class EPA_ValidType : uint8
@@ -9,7 +17,7 @@ enum class EPA_ValidType : uint8
 };
 
 // 입력 모드 열거형
-UENUM(BlueprintType)
+UENUM()
 enum class EPA_InputMode : uint8
 {
 	GameOnly,
@@ -17,7 +25,7 @@ enum class EPA_InputMode : uint8
 };
 
 // 성공 여부 열거형
-UENUM(BlueprintType)
+UENUM()
 enum class EPA_SuccessType : uint8
 {
 	SuccessFul,
