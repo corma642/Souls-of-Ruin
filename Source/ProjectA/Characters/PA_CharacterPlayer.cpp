@@ -135,7 +135,7 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	// 카메라 회전 함수 바인딩
 	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnLook);
 
-	// 어빌리티 입력 액션 바인딩 함수 바인딩
+	// 카메라 줌인 함수 바인딩
 	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_CameraZoom, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnCameraZoom);
 
 	// 어빌리티 입력 액션 바인딩

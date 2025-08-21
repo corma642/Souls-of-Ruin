@@ -19,4 +19,8 @@ public:
 
 	// 무기 피해 종료 함수
 	virtual void OnWeaponHitEndTargetActor(AActor* HitActor) override;
+
+private:
+	// 막기 유효 검사 함수
+	bool IsValidBlock(AActor* HitActor);
 };
