@@ -7,14 +7,14 @@
 #include "PA_BaseWeapon.generated.h"
 
 // 대상 상호작용 델리게이트
-DECLARE_DELEGATE_OneParam(FOnTargetInteractedDelegate, AActor*)
+DECLARE_DELEGATE_TwoParams(FOnTargetInteractedDelegate, AActor*, const FHitResult&)
 
 UCLASS()
 class PROJECTA_API APA_BaseWeapon : public AActor
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	APA_BaseWeapon();
 
 	FORCEINLINE class UBoxComponent* GetLeftWeaponCollisionBox() const { return LeftWeaponCollisionBox; }
@@ -29,35 +29,40 @@ public:
 	// 상호작용 종료 이벤트
 	FOnTargetInteractedDelegate OnWeaponTargetHitEnd;
 
-
-	///////////////////////////////////////////////////////////////////////////
-	/* 왼쪽 무기 */
 protected:
+	// 왼쪽 무기 콜리전 오버랩 함수
 	UFUNCTION()
 	void OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	// 왼쪽 무기 콜리전 오버랩 종료 함수
 	UFUNCTION()
 	void OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
-	TObjectPtr<class UStaticMeshComponent> LeftWeaponMesh = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
-	TObjectPtr<class UBoxComponent> LeftWeaponCollisionBox;
-
-
-	///////////////////////////////////////////////////////////////////////////
-	/* 오른쪽 무기 */
-protected:
+	// 오른쪽 무기 콜리전 오버랩 함수
 	UFUNCTION()
 	void OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	// 오른쪽 무기 콜리전 오버랩 종료 함수
 	UFUNCTION()
 	void OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	// 충돌 지점 확인 트레이싱 함수
+	TPair<bool, FHitResult> GetAttackHitResult(AActor* HitActor);
+
+protected:
+	// 왼쪽 무기 메시
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
+	TObjectPtr<class UStaticMeshComponent> LeftWeaponMesh = nullptr;
+
+	// 왼쪽 무기 콜리전 박스
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
+	TObjectPtr<class UBoxComponent> LeftWeaponCollisionBox;
+
+	// 오른쪽 무기 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UStaticMeshComponent> RightWeaponMesh = nullptr;
 
+	// 오른쪽 무기 콜리전 박스
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")
 	TObjectPtr<class UBoxComponent> RightWeaponCollisionBox;
 };

@@ -56,10 +56,10 @@ public:
 	void ToggleWeaponCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::None);
 
 	// 무기 피해 함수
-	virtual void OnWeaponHitStartTargetActor(AActor* HitActor);
+	virtual void OnWeaponHitStartTargetActor(AActor* HitActor, const FHitResult& HitResult);
 
 	// 무기 피해 종료 함수
-	virtual void OnWeaponHitEndTargetActor(AActor* HitActor);
+	virtual void OnWeaponHitEndTargetActor(AActor* HitActor, const FHitResult& HitResult);
 
 protected:
 	// 무기에 오버랩된 액터 배열

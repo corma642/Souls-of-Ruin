@@ -49,9 +49,21 @@ void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
+		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
+			TPair<bool, FHitResult> AttackHit = GetAttackHitResult(OtherActor);
+
+			if (AttackHit.Key)
+			{
+				// 상호작용 시작 이벤트 호출
+				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
+			}
+			else
+			{
+				// 상호작용 시작 이벤트 호출
+				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
+			}
 		}
 	}
 }
@@ -63,9 +75,12 @@ void APA_BaseWeapon::OnLeftCollisionBoxEndOverlap(UPrimitiveComponent* Overlappe
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
+		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
+			// 상호작용 종료 이벤트 호출
+			// 여기서는 FHitResult가 필요 없으므로, 기본 생성자를 넘김
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, FHitResult());
 		}
 	}
 }
@@ -78,9 +93,21 @@ void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* Overla
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
+		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor);
+			TPair<bool, FHitResult> AttackHit = GetAttackHitResult(OtherActor);
+
+			if (AttackHit.Key)
+			{
+				// 상호작용 시작 이벤트 호출
+				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
+			}
+			else
+			{
+				// 상호작용 시작 이벤트 호출
+				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
+			}
 		}
 	}
 }
@@ -92,9 +119,40 @@ void APA_BaseWeapon::OnRightCollisionBoxEndOverlap(UPrimitiveComponent* Overlapp
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
+		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			OnWeaponTargetHitEnd.ExecuteIfBound(OtherActor);
+			// 상호작용 종료 이벤트 호출
+			// 여기서는 FHitResult가 필요 없으므로, 기본 생성자를 넘김
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, FHitResult());
 		}
 	}
+}
+
+TPair<bool, FHitResult> APA_BaseWeapon::GetAttackHitResult(AActor* HitActor)
+{
+	TPair<bool, FHitResult> Ret;
+
+	if (APawn* HitPawn = Cast<APawn>(HitActor))
+	{
+		// 트레이스로 공격 충돌 지점 HitResult 얻기
+		FHitResult AttackHit;
+		FVector Start = GetActorLocation(); // 또는 무기 끝점
+		FVector End = HitPawn->GetActorLocation(); // 또는 충돌 지점 추정
+		FCollisionQueryParams Params(NAME_None, true, GetOwner());
+		Params.AddIgnoredActor(this);
+		Params.AddIgnoredActor(GetOwner());
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(AttackHit, Start, End, ECC_Pawn, Params);
+		if (bHit)
+		{
+			Ret.Key = false;
+			Ret.Value = AttackHit;
+			return Ret;
+		}
+	}
+
+	Ret.Key = false;
+	Ret.Value = FHitResult();
+	return Ret;
 }

@@ -6,12 +6,16 @@
 #include "Components/Combat/PA_PawnCombatComponent.h"
 #include "PA_PlayerCombatComponent.generated.h"
 
+class APA_CharacterPlayer;
+
 UCLASS()
 class PROJECTA_API UPA_PlayerCombatComponent : public UPA_PawnCombatComponent
 {
 	GENERATED_BODY()
 	
 public:
+	UPA_PlayerCombatComponent();
+
 	// 태그를 통해, 현재 플레이어에 등록된 무기를 가져오는 함수
 	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
 	class APA_PlayerWeapon* GetPlayerCarriedWeaponByTag(FGameplayTag InWeaponTagToGet) const;
@@ -29,8 +33,12 @@ public:
 	/* Interaction */
 public:
 	// 무기 피해 함수
-	virtual void OnWeaponHitStartTargetActor(AActor* HitActor) override;
+	virtual void OnWeaponHitStartTargetActor(AActor* HitActor, const FHitResult& HitResult) override;
 
 	// 무기 피해 종료 함수
-	virtual void OnWeaponHitEndTargetActor(AActor* HitActor) override;
+	virtual void OnWeaponHitEndTargetActor(AActor* HitActor, const FHitResult& HitResult) override;
+
+private:
+	// 플레이어 클래스
+	APA_CharacterPlayer* Player = nullptr;
 };

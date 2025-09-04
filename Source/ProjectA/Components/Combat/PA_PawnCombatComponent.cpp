@@ -88,10 +88,10 @@ void UPA_PawnCombatComponent::ToggleWeaponCollision(bool bShouldEnable, EToggleD
 	}
 }
 
-void UPA_PawnCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor)
+void UPA_PawnCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, const FHitResult& HitResult)
 {
 }
 
-void UPA_PawnCombatComponent::OnWeaponHitEndTargetActor(AActor* HitActor)
+void UPA_PawnCombatComponent::OnWeaponHitEndTargetActor(AActor* HitActor, const FHitResult& HitResult)
 {
 }
