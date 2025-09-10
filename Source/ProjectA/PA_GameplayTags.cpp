@@ -12,8 +12,10 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_UnEquip_DualWield, "InputTag.UnEquip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_Light_DualWield, "InputTag.Attack.Light.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_SprintAttack_DualWield, "InputTag.Attack.SprintAttack.DualWield");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_ChangeLockOnTarget, "InputTag.ChangeLockOnTarget");
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable, "InputTag.Toggleable");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable_TargetLockOn, "InputTag.Toggleable.TargetLockOn");
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_MustBeHeld, "InputTag.MustBeHeld");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_MustBeHeld_Sprint, "InputTag.MustBeHeld.Sprint");
@@ -29,18 +31,22 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_HitPause, "Player.Ability.HitPause");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Roll, "Player.Ability.Roll");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Block, "Player.Ability.Block");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_TargetLockOn, "Player.Ability.TargetLockOn");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Equip_DualWield, "Player.Event.Equip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_UnEquip_DualWield, "Player.Event.UnEquip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_NextComboAttack, "Player.Event.NextComboAttack");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_HitPause, "Player.Event.HitPause");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_SuccessfulBlock, "Player.Event.SuccessfulBlock");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ChangeLockOnTarget_Left, "Player.Event.ChangeLockOnTarget.Left");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ChangeLockOnTarget_Right, "Player.Event.ChangeLockOnTarget.Right");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_DualWield, "Player.Weapon.DualWield");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Sprinting, "Player.Status.Sprinting");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rolling, "Player.Status.Rolling");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Blocking, "Player.Status.Blocking");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_TargetLockOn, "Player.Status.TargetLockOn");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");
 

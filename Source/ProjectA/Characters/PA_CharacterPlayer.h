@@ -47,10 +47,18 @@ private:
 	void OnAbilityInputPressed(FGameplayTag InInputTag);
 	void OnAbilityInputReleased(FGameplayTag InInputTag);
 
+	// 락온 타깃 전환 함수
+	void OnChangeLockOnTargetTriggered(const FInputActionValue& InputActionValue);
+	void OnChangeLockOnTargetCompleted(const FInputActionValue& InputActionValue);
+
 private:
 	// 입력 액션 구성 데이터 에셋
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UDA_InputConfig> InputConfigData;
+
+	// 락온 시, 전환하고자하는 방향
+	UPROPERTY()
+	FVector2D ChangeDirection = FVector2D::ZeroVector;
 
 
 	///////////////////////////////////////////////////////////////////////////

@@ -140,6 +140,10 @@ void APA_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	// 어빌리티 입력 액션 바인딩
 	PAInputComponent->AbilityInputActionBind(InputConfigData, this, &APA_CharacterPlayer::OnAbilityInputPressed, &APA_CharacterPlayer::OnAbilityInputReleased);
+
+	// 락온 타깃 전환 입력 액션 바인딩
+	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_ChangeLockOnTarget, ETriggerEvent::Triggered, this, &APA_CharacterPlayer::OnChangeLockOnTargetTriggered);
+	PAInputComponent->NativeInputActionBind(InputConfigData, PA_GameplayTags::InputTag_ChangeLockOnTarget, ETriggerEvent::Completed, this, &APA_CharacterPlayer::OnChangeLockOnTargetCompleted);
 }
 
 void APA_CharacterPlayer::OnMove(const FInputActionValue& InputActionValue)
@@ -176,6 +180,23 @@ void APA_CharacterPlayer::OnAbilityInputPressed(FGameplayTag InInputTag)
 void APA_CharacterPlayer::OnAbilityInputReleased(FGameplayTag InInputTag)
 {
 	AbilitySystemComponent->OnAbilityInputReleased(InInputTag);
+}
+
+void APA_CharacterPlayer::OnChangeLockOnTargetTriggered(const FInputActionValue& InputActionValue)
+{
+	ChangeDirection = InputActionValue.Get<FVector2D>();
+}
+
+void APA_CharacterPlayer::OnChangeLockOnTargetCompleted(const FInputActionValue& InputActionValue)
+{
+	FGameplayEventData Payload;
+
+	// 마우스 휠을 아래로 움직이면 -1의 값이, 위로 움직이면 1의 값이 들어옴
+	// 따라서, 전환하고자하는 방향값에 따라 왼쪽 전환, 오른쪽 전환 이벤트를 전달
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this,
+		ChangeDirection.X < 0.0 ? PA_GameplayTags::Player_Event_ChangeLockOnTarget_Left : PA_GameplayTags::Player_Event_ChangeLockOnTarget_Right,
+		Payload
+	);
 }
 
 void APA_CharacterPlayer::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
@@ -215,7 +236,7 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 				break;
 			}
 		}
-		
+
 		// 트레이싱된 물체가 플레이어뿐인 경우
 		// 카메라에 마스킹된 장애물들의 마스킹을 초기화
 		if (bOnlyPlayerDetected)
