@@ -28,9 +28,9 @@ APA_AIController::APA_AIController(const FObjectInitializer& ObjectInitializer)
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = false;
 
 	// 시야 범위 설정
-	AISenseConfig_Sight->SightRadius = 500.0f; // 시야 반경
+	AISenseConfig_Sight->SightRadius = 750.0f; // 시야 반경
 	AISenseConfig_Sight->LoseSightRadius = 1000.0f; // 시야 상실 반경
-	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 90.0f; // 주변 시야 각도
+	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 120.0f; // 주변 시야 각도
 
 
 	EnemyPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("EnemyPerceptionComponent"));
@@ -108,6 +108,10 @@ void APA_AIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimu
 			{
 				BBComp->SetValueAsObject(TEXT("TargetActor"), Actor);
 			}
+		}
+		else
+		{
+			BBComp->SetValueAsObject(TEXT("TargetActor"), nullptr);
 		}
 	}
 }

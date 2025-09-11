@@ -63,10 +63,6 @@ protected:
 	// 최대 이동속도 변경 함수
 	virtual void OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data);
 
-	// 블루프린트에서 직접 최대 이동속도 변경 시, 이 함수를 호출해서 AttributeSet과 동기화
-	UFUNCTION(BlueprintCallable, Category = "Custom | Attributes")
-	virtual void SetMaxMovementSpeedAndAttribute(float NewSpeed);
-
 
 	///////////////////////////////////////////////////////////////////////////
 	/* StartUpData */

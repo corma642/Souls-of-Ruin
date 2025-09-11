@@ -38,7 +38,7 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 180.f, 0.f);
-	GetCharacterMovement()->MaxWalkSpeed = 350.f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
 	// 전투 컴포넌트

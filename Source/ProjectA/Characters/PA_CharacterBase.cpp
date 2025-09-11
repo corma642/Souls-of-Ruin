@@ -65,8 +65,3 @@ void APA_CharacterBase::PossessedBy(AController* NewController)
 void APA_CharacterBase::OnMaxMovementSpeedChanged(const FOnAttributeChangeData& Data)
 {
 }
-
-void APA_CharacterBase::SetMaxMovementSpeedAndAttribute(float NewSpeed)
-{
-	AbilitySystemComponent->SetNumericAttributeBase(AttributeSet->GetMaxMovementSpeedAttribute(), NewSpeed);
-}
