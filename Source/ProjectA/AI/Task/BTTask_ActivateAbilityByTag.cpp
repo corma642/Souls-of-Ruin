@@ -7,6 +7,7 @@
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AIController.h"
 #include "MotionWarpingComponent.h"
+#include "PA_FunctionLibrary.h"
 
 #include "PA_GameplayTags.h"
 
@@ -52,6 +53,12 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 {
 	// AI 캐릭터나 공격 대상이 유효하지 않으면 태스크를 실패로 종료
 	if (!AICharacter || !TargetActor)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
+
+	// 공격받으면 태스크를 실패로 종료
+	if (AICharacter && UPA_FunctionLibrary::NativeDoesActorHaveTag(AICharacter, PA_GameplayTags::Enemy_Status_UnderAttack))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}

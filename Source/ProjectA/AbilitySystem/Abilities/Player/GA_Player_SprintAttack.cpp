@@ -32,6 +32,13 @@ void UGA_Player_SprintAttack::ActivateAbility(const FGameplayAbilitySpecHandle H
 	}
 	else
 	{
+		// 스태미나가 부족한 경우 어빌리티 사용 실패
+		if (!HaveEnoughStamina(UseStamina))
+		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+			return;
+		}
+
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		
 		PlaySprintAttackMontage();

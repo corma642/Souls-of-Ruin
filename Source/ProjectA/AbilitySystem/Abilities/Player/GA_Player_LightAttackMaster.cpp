@@ -12,12 +12,25 @@ UGA_Player_LightAttackMaster::UGA_Player_LightAttackMaster()
 
 void UGA_Player_LightAttackMaster::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	// 최대 콤보 공격 수를 넘어가면, 첫 번쨰 공격으로 초기화
 	if (CurrentCombo > ComboAttackMontagesMap.Num())
 	{
 		CurrentCombo = 1;
 	}
 
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	// 스태미나가 부족한 경우 어빌리티 사용 실패
+	if (!HaveEnoughStamina(UseStamina))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+		return;
+	}
+
+	if (!bHasConsumedStamina)
+	{
+		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+		bHasConsumedStamina = true;
+	}
 
 	// 콤보 타이머 초기화
 	GetWorld()->GetTimerManager().ClearTimer(ComboTimerHandle);
@@ -46,6 +59,8 @@ void UGA_Player_LightAttackMaster::ActivateAbility(const FGameplayAbilitySpecHan
 void UGA_Player_LightAttackMaster::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	ResetComboAttack();
+
+	bHasConsumedStamina = false;
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

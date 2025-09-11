@@ -41,7 +41,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	float RollDistance = 500.f;
 
-private:
-	// 재사용 딜레이 타이머 핸들
-	FTimerHandle DelayTimerHandle;
 };

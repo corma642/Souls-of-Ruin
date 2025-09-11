@@ -24,6 +24,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
 	class UPA_PlayerCombatComponent* GetPlayerCombatComponentFromActorInfo();
 
+	// 어빌리티 사용에 충분한 스태미나가 있는지 확인하는 함수
+	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
+	bool HaveEnoughStamina(const float InUseStamina);
+
+
 private:
 	// 플레이어 캐릭터 캐시 데이터
 	TWeakObjectPtr<class APA_CharacterPlayer> CachedPlayerCharacter;
@@ -43,4 +48,8 @@ public:
 		FGameplayTag InCurrentAttackTypeTag,
 		int32 InComboAttackCount
 	);
+
+	// 스태미나 소모량
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	float UseStamina = 0.0f;
 };

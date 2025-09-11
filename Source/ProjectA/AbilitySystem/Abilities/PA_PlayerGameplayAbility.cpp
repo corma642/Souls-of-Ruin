@@ -6,6 +6,7 @@
 #include "Characters/PA_CharacterPlayer.h"
 #include "Controllers/PA_PlayerController.h"
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
+#include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
 
 #include "PA_GameplayTags.h"
 
@@ -32,6 +33,12 @@ APA_PlayerController* UPA_PlayerGameplayAbility::GetPlayerControllerFromActorInf
 UPA_PlayerCombatComponent* UPA_PlayerGameplayAbility::GetPlayerCombatComponentFromActorInfo()
 {
 	return GetPlayerCharacterFromActorInfo()->GetPlayerCombatComponent();
+}
+
+bool UPA_PlayerGameplayAbility::HaveEnoughStamina(const float InUseStamina)
+{
+	// 속성 셋의 현재 스태미나에 접근해서 어빌리티 사용에 충분한지 확인
+	return GetPlayerCharacterFromActorInfo()->GetAttributeSet()->GetCurrentStamina() >= InUseStamina;
 }
 
 FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InBaseWeaponDamage, FGameplayTag InCurrentAttackTypeTag, int32 InComboAttackCount)

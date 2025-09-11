@@ -16,7 +16,8 @@ UGA_Player_Roll::UGA_Player_Roll()
 
 void UGA_Player_Roll::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (DelayTimerHandle.IsValid())
+	// 스태미나가 부족한 경우 어빌리티 사용 실패
+	if (!HaveEnoughStamina(UseStamina))
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 		return;
@@ -24,20 +25,12 @@ void UGA_Player_Roll::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	// 구르기 몽타주 재생
 	PlayRollMontage();
 }
 
 void UGA_Player_Roll::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (!DelayTimerHandle.IsValid())
-	{
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
-			}
-		), 0.5f, false, -1.0f);
-	}
-
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 

@@ -43,4 +43,7 @@ private:
 
     // 콤보 공격 초기화 타이머 핸들
     FTimerHandle ComboTimerHandle;
+
+    // 스태미나를 소모했는지 확인하는 플래그
+    bool bHasConsumedStamina = false;
 };
