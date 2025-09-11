@@ -128,6 +128,9 @@ void APA_CharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 캐릭터의 스켈레탈 메쉬 저장 (자손 스켈레탈 메쉬까지 모두 저장)
+	GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents, true);
+
 	if (UPA_BaseWidget* HealthWidget = Cast<UPA_BaseWidget>(EnemyHealthWidgetComponent->GetUserWidgetObject()))
 	{
 		// 위젯 초기화
@@ -162,8 +165,14 @@ void APA_CharacterEnemy::UpdateMaterialParameterCallback()
 	// 즉, 현재 머티리얼 값
 	float CurrentAlphaValue = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
 
-	// 적 액터 디졸브 머티리얼 파라미터 갱신
-	GetMesh()->SetScalarParameterValueOnMaterials(TEXT("DissolveAmount"), CurrentAlphaValue);
+	// 캐릭터의 스켈레탈 메쉬 배열을 모두 순회 
+	for (USkeletalMeshComponent*& Skeletal : SkeletalMeshComponents)
+	{
+		if (!Skeletal) continue;
+
+		// 디졸브 머티리얼 파라미터 갱신
+		Skeletal->SetScalarParameterValueOnMaterials(TEXT("DissolveAmount"), CurrentAlphaValue);
+	}
 
 	// 적 무기 디졸브 머티리얼 파라미터 갱신
 	if (EnemyWeapon)

@@ -18,6 +18,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
+private:
+	// 캐릭터의 스켈레탈 메쉬 배열 (자손 포함)
+	TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
+
 
 	///////////////////////////////////////////////////////////////////////////
 	/* StartUpData */
