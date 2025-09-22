@@ -19,6 +19,9 @@ public:
 	// 액터의 특정 태그 보유 여부
 	static bool NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck);
 
+	// 막기 유효 여부 반환 함수
+	static bool NativeIsValidBlock(AActor* InAttacker, AActor* InVictim);
+
 public:
 	// 액터에 태그 추가하는 함수 (중복인 경우 패스)
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
@@ -44,4 +47,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Custom | FunctionLibrary")
 	static int ComputeHitReactDirection(AActor* InAttacker, AActor* InVictim);
 	
+	// 타깃에게 게임플레이 이펙트 스펙 핸들 적용하는 함수
+	UFUNCTION(BlueprintPure, Category = "Custom | FunctionLibrary")
+	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
+
 };

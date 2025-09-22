@@ -27,9 +27,6 @@ public:
 	virtual void OnWeaponHitEndTargetActor(AActor* HitActor, const FHitResult& HitResult) override;
 
 private:
-	// 막기 유효 검사 함수
-	bool IsValidBlock(AActor* HitActor);
-
 	// 적 클래스
 	APA_CharacterEnemy* Enemy = nullptr;
 };

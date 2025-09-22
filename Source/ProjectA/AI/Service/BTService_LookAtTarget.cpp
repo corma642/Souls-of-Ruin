@@ -9,9 +9,9 @@
 UBTService_LookAtTarget::UBTService_LookAtTarget()
 {
 	// 비헤이비어 트리에서 보일 서비스 이름
-	NodeName = TEXT("Native Look At Target");
+	NodeName = TEXT("BTService Native Look At Target");
 
-	// / 필수 추가 / 기본 서비스가 제대로 동작하도록 플래그를 알리는 매크로
+	// 필수 추가 / 기본 서비스가 제대로 동작하도록 플래그를 알리는 매크로
 	INIT_SERVICE_NODE_NOTIFY_FLAGS();
 
 	// 블랙보드 키를 초기화

@@ -27,6 +27,9 @@ private:
 	// 회전 워프 타겟을 가져오는 함수
 	FVector GetRotationWarpTarget();
 
+	// 태스크 종료 함수
+	void FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded);
+
 private:
 	// 활성화할 어빌리티 태그
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")
@@ -43,6 +46,10 @@ private:
 	// 공격 대상 키
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")
 	FBlackboardKeySelector TargetActorKey;
+
+	// 모션 워핑 애니메이션 사용 여부
+	UPROPERTY(EditAnywhere, Category = "Custom | Task")
+	bool bUseMotionWarping;
 
 	// 캐릭터 캐시
 	class APA_CharacterEnemy* AICharacter = nullptr;

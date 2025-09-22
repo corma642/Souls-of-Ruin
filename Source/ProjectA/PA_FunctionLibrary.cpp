@@ -6,6 +6,8 @@
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 
+#include "PA_GameplayTags.h"
+
 UPA_PawnCombatComponent* UPA_FunctionLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
 {
 	check(InActor);
@@ -27,6 +29,29 @@ bool UPA_FunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag T
 {
 	UPA_AbilitySystemComponent* ASC = NativeGetPAAbilitySystemComponentFromActor(InActor);
 	return ASC->HasMatchingGameplayTag(TagToCheck);
+}
+
+bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVictim)
+{
+	bool bIsValidBlock = false;
+
+	// 피해자에게 "막는 중" 태그 보유중인지 검사
+	const bool bIsPlayerBlocking = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
+
+	// 공격자의 공격이 막기를 뚫는 공격인지 검사
+	const bool bIsMyAttackUnblockable = false;
+
+	// 피해자는 막는 중인데, 공격자의 공격은 막기를 뚫지 못할 경우
+	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
+	{
+		// 공격자와 피해자의 두 전방 벡터의 내적을 구함
+		const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InVictim->GetActorForwardVector());
+
+		// -1이 완전히 마주 보는 상태, 0이 수직인 상태이니, -0.4정도면 막기 성공
+		bIsValidBlock = DotResult < -0.4f;
+	}
+
+	return bIsValidBlock;
 }
 
 void UPA_FunctionLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag InTag)
@@ -129,4 +154,17 @@ int UPA_FunctionLibrary::ComputeHitReactDirection(AActor* InAttacker, AActor* In
 	if (Degree < -135.f || Degree > 135.f)	return 3;
 
 	return 0;
+}
+
+bool UPA_FunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle)
+{
+	// 가해자와 피해자의 ASC를 가져옴
+	UPA_AbilitySystemComponent* SourceASC = NativeGetPAAbilitySystemComponentFromActor(InInstigator);
+	UPA_AbilitySystemComponent* TargetASC = NativeGetPAAbilitySystemComponentFromActor(InTargetActor);
+
+	// 가해자의 ASC에서 ApplyGameplayEffectSpecToTarget 함수를 통해 입력받은 핸들을 타깃 ASC에 적용
+	FActiveGameplayEffectHandle AtiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
+
+	// 적용 결과를 반환
+	return AtiveGameplayEffectHandle.WasSuccessfullyApplied();
 }

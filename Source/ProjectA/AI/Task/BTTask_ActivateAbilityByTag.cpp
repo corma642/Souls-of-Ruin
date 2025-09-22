@@ -14,7 +14,7 @@
 UBTTask_ActivateAbilityByTag::UBTTask_ActivateAbilityByTag()
 {
 	// BT에서 사용할 노드 이름 설정	
-	NodeName = TEXT("Activate Ability By Tag");
+	NodeName = TEXT("BTTask Activate Ability By Tag");
 
 	// / 필수 추가 / 기본 태스크가 제대로 동작하도록 플래그를 알리는 매크로
 	INIT_TASK_NODE_NOTIFY_FLAGS();
@@ -42,8 +42,8 @@ EBTNodeResult::Type UBTTask_ActivateAbilityByTag::ExecuteTask(UBehaviorTreeCompo
 		return EBTNodeResult::Failed;
 	}
 
-	// 적 근접 공격 어빌리티 활성화
-	Cast<UPA_AbilitySystemComponent>(AICharacter->GetAbilitySystemComponent())->TryActivateAbilityByTag(PA_GameplayTags::Enemy_Ability_MeleeAttack);
+	// 적 공격 어빌리티 활성화
+	Cast<UPA_AbilitySystemComponent>(AICharacter->GetAbilitySystemComponent())->TryActivateAbilityByTag(AbilityTagToActivate);
 
 	return EBTNodeResult::InProgress; // 태스크 진행중으로 종료
 	// TickTask 함수에서 이후 처리
@@ -54,13 +54,13 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	// AI 캐릭터나 공격 대상이 유효하지 않으면 태스크를 실패로 종료
 	if (!AICharacter || !TargetActor)
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		FinishTask(OwnerComp, false);
 	}
 
 	// 공격받으면 태스크를 실패로 종료
 	if (AICharacter && UPA_FunctionLibrary::NativeDoesActorHaveTag(AICharacter, PA_GameplayTags::Enemy_Status_UnderAttack))
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		FinishTask(OwnerComp, false);
 	}
 
 	// 공격 중 상태를 확인
@@ -69,29 +69,40 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	// 공격 중이 아니면 태스크를 완료
 	if (!bIsAttacking)
 	{
-		// 공격 모션 워핑 제거
-		UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
-		if (MotionWarpingComponent)
+		if (bUseMotionWarping)
 		{
-			MotionWarpingComponent->RemoveWarpTarget(TEXT("LocationTarget"));
-			MotionWarpingComponent->RemoveWarpTarget(TEXT("RotationTarget"));
+			// 공격 모션 워핑 제거
+			UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
+			if (MotionWarpingComponent)
+			{
+				MotionWarpingComponent->RemoveWarpTarget(TEXT("LocationTarget"));
+				MotionWarpingComponent->RemoveWarpTarget(TEXT("RotationTarget"));
+			}
 		}
 
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		FinishTask(OwnerComp, true);
 	}
 	else
 	{
-		// 공격 모션 워핑 위치 업데이트
-		AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
-			"LocationTarget",
-			GetLocationWarpTarget()
-		);
+		if (bUseMotionWarping)
+		{
+			// 공격 모션 워핑 업데이트
+			UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
+			if (MotionWarpingComponent)
+			{
+				// 공격 모션 워핑 위치 업데이트
+				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
+					"LocationTarget",
+					GetLocationWarpTarget()
+				);
 
-		// 공격 모션 워핑 회전 업데이트
-		AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
-			"RotationTarget",
-			GetRotationWarpTarget()
-		);
+				// 공격 모션 워핑 회전 업데이트
+				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
+					"RotationTarget",
+					GetRotationWarpTarget()
+				);
+			}
+		}
 	}
 }
 
@@ -115,4 +126,12 @@ FVector UBTTask_ActivateAbilityByTag::GetLocationWarpTarget()
 FVector UBTTask_ActivateAbilityByTag::GetRotationWarpTarget()
 {
 	return TargetActor->GetActorLocation();
+}
+
+void UBTTask_ActivateAbilityByTag::FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded)
+{
+	// 공격 중 상태를 false로 설정
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsAttackingKey.SelectedKeyName, false);
+
+	bIsSucceeded ? FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded) : FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }

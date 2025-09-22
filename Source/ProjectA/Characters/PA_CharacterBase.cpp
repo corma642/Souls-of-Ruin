@@ -20,6 +20,7 @@ APA_CharacterBase::APA_CharacterBase()
 	AbilitySystemComponent = CreateDefaultSubobject<UPA_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	AttributeSet = CreateDefaultSubobject<UPA_AttributeSetBase>(TEXT("AttributeSet"));
+	AbilitySystemComponent->AddAttributeSetSubobject<UPA_AttributeSetBase>(AttributeSet);
 
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 }
