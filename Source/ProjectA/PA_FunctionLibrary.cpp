@@ -39,7 +39,7 @@ bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVicti
 	const bool bIsPlayerBlocking = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
 
 	// 공격자의 공격이 막기를 뚫는 공격인지 검사
-	const bool bIsMyAttackUnblockable = false;
+	const bool bIsMyAttackUnblockable = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Enemy_Status_UnBlockable);
 
 	// 피해자는 막는 중인데, 공격자의 공격은 막기를 뚫지 못할 경우
 	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)

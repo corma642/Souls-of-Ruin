@@ -62,6 +62,7 @@ namespace PA_GameplayTags
 
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_Boundary);
 	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_UnderAttack);
+	PROJECTA_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Status_UnBlockable);
 
 
 	/* Shared Tags */
