@@ -36,13 +36,13 @@ bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVicti
 	bool bIsValidBlock = false;
 
 	// 피해자에게 "막는 중" 태그 보유중인지 검사
-	const bool bIsPlayerBlocking = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
+	const bool bIsVictimBlocking = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
 
 	// 공격자의 공격이 막기를 뚫는 공격인지 검사
-	const bool bIsMyAttackUnblockable = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Enemy_Status_UnBlockable);
+	const bool bIsAttackUnblockable = UPA_FunctionLibrary::NativeDoesActorHaveTag(InAttacker, PA_GameplayTags::Enemy_Status_UnBlockable);
 
-	// 피해자는 막는 중인데, 공격자의 공격은 막기를 뚫지 못할 경우
-	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
+	// 피해자가 막는 중이고, 공격자의 공격은 막기를 뚫지 못할 경우
+	if (bIsVictimBlocking && !bIsAttackUnblockable)
 	{
 		// 공격자와 피해자의 두 전방 벡터의 내적을 구함
 		const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InVictim->GetActorForwardVector());
@@ -167,4 +167,29 @@ bool UPA_FunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor* InI
 
 	// 적용 결과를 반환
 	return AtiveGameplayEffectHandle.WasSuccessfullyApplied();
+}
+
+FHitResult UPA_FunctionLibrary::GetAttackHitResult(AActor* InAttacker, AActor* InVictim)
+{
+	FHitResult Ret = FHitResult();
+
+	if (!InAttacker || !InVictim) return Ret;
+
+	APawn* HitPawn = Cast<APawn>(InVictim);
+
+	// 트레이스로 공격 충돌 지점 HitResult 얻기
+	FHitResult AttackHit;
+	FVector Start = InAttacker->GetActorLocation(); // 또는 무기 끝점
+	FVector End = HitPawn->GetActorLocation(); // 또는 충돌 지점 추정
+	FCollisionQueryParams Params(NAME_None, true, InAttacker);
+	Params.AddIgnoredActor(InAttacker);
+	Params.AddIgnoredActor(InAttacker->Owner);
+
+	bool bHit = InAttacker->GetWorld()->LineTraceSingleByChannel(AttackHit, Start, End, ECC_Pawn, Params);
+	if (bHit)
+	{
+		return AttackHit;
+	}
+
+	return Ret;
 }

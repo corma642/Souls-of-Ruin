@@ -46,9 +46,6 @@ protected:
 	UFUNCTION()
 	void OnRightCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// 충돌 지점 확인 트레이싱 함수
-	TPair<bool, FHitResult> GetAttackHitResult(AActor* HitActor);
-
 protected:
 	// 왼쪽 무기 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Mesh")

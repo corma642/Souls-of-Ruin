@@ -21,6 +21,14 @@ UBTTask_ActivateAbilityByTag::UBTTask_ActivateAbilityByTag()
 
 	// 블랙보드 키 필터 설정
 	TargetActorKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(ThisClass, TargetActorKey), AActor::StaticClass());
+
+	bNotifyTick = true;				// 태스크 알림 허용
+	bNotifyTaskFinished = true;		// 태스크 완료 알림 허용
+	bCreateNodeInstance = false;	// 태스크의 인스턴스화 비활성화
+
+	bUseMotionWarping = false;
+	bMotionWarpingSpeed = 2.5f;
+	bIsCanStopAttack = true;
 }
 
 EBTNodeResult::Type UBTTask_ActivateAbilityByTag::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -42,6 +50,12 @@ EBTNodeResult::Type UBTTask_ActivateAbilityByTag::ExecuteTask(UBehaviorTreeCompo
 		return EBTNodeResult::Failed;
 	}
 
+	// 태스크 상태 메모리 저장
+	FActivateAbilityByTagTaskMemory* Memory = CastInstanceNodeMemory<FActivateAbilityByTagTaskMemory>(NodeMemory);
+	check(Memory);
+
+	Memory->bIsInitialized = false;
+
 	// 적 공격 어빌리티 활성화
 	Cast<UPA_AbilitySystemComponent>(AICharacter->GetAbilitySystemComponent())->TryActivateAbilityByTag(AbilityTagToActivate);
 
@@ -57,10 +71,17 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		FinishTask(OwnerComp, false);
 	}
 
-	// 공격받으면 태스크를 실패로 종료
-	if (AICharacter && UPA_FunctionLibrary::NativeDoesActorHaveTag(AICharacter, PA_GameplayTags::Enemy_Status_UnderAttack))
+	// 태스크 상태 메모리 가져오기
+	FActivateAbilityByTagTaskMemory* Memory = CastInstanceNodeMemory<FActivateAbilityByTagTaskMemory>(NodeMemory);
+
+	// 공격 중 피해를 받았을 때 공격이 중단될 수 있는 경우
+	if (bIsCanStopAttack)
 	{
-		FinishTask(OwnerComp, false);
+		// 공격받으면 태스크를 실패로 종료
+		if (UPA_FunctionLibrary::NativeDoesActorHaveTag(AICharacter, PA_GameplayTags::Enemy_Status_UnderAttack))
+		{
+			FinishTask(OwnerComp, false);
+		}
 	}
 
 	// 공격 중 상태를 확인
@@ -80,23 +101,44 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 			}
 		}
 
+		// 워프 상태 초기화
+		Memory->bIsInitialized = false;
+
 		FinishTask(OwnerComp, true);
 	}
 	else
 	{
 		if (bUseMotionWarping)
 		{
-			// 공격 모션 워핑 업데이트
+			// 공격 모션 워핑 업데이트 로직 수행
 			UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
 			if (MotionWarpingComponent)
 			{
-				// 공격 모션 워핑 위치 업데이트
-				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
-					"LocationTarget",
-					GetLocationWarpTarget()
+				// #1: 최종 목표 위치 계산
+				const FVector FinalTargetLocation = GetLocationWarpTarget();
+
+				// #2: 공격 시작 시, 현재 위치 초기 설정
+				if (!Memory->bIsInitialized)
+				{
+					Memory->CurrentWarpLocation = AICharacter->GetActorLocation();
+					Memory->bIsInitialized = true;
+				}
+
+				// #3: 보간된 목표 위치 계산
+				Memory->CurrentWarpLocation = FMath::VInterpTo(
+					Memory->CurrentWarpLocation,
+					FinalTargetLocation,
+					DeltaSeconds,
+					bMotionWarpingSpeed
 				);
 
-				// 공격 모션 워핑 회전 업데이트
+				// #4: 공격 모션 워핑 위치 업데이트 (보간된 위치 사용)
+				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
+					"LocationTarget",
+					Memory->CurrentWarpLocation
+				);
+
+				// #5: 공격 모션 워핑 회전 업데이트
 				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
 					"RotationTarget",
 					GetRotationWarpTarget()
@@ -126,6 +168,11 @@ FVector UBTTask_ActivateAbilityByTag::GetLocationWarpTarget()
 FVector UBTTask_ActivateAbilityByTag::GetRotationWarpTarget()
 {
 	return TargetActor->GetActorLocation();
+}
+
+uint16 UBTTask_ActivateAbilityByTag::GetInstanceMemorySize() const
+{
+	return sizeof(FActivateAbilityByTagTaskMemory);
 }
 
 void UBTTask_ActivateAbilityByTag::FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded)

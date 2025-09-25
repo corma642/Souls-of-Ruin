@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/UI/PA_EnemyUIComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/BoxComponent.h"
 
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/PA_AttributeSetBase.h"
@@ -21,6 +22,8 @@
 
 #include "Controllers/PA_AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+
+#include "PA_FunctionLibrary.h"
 
 #include "Engine/AssetManager.h"
 
@@ -41,6 +44,18 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
+	// 왼손 콜리전 박스 컴포넌트
+	LeftHandCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftHandCollisionBox"));
+	LeftHandCollisionBox->SetupAttachment(GetMesh());
+	LeftHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnHandCollisionBoxBeginOverlap);
+
+	// 오른손 콜리전 박스 컴포넌트
+	RightHandCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("RightHandCollisionBox"));
+	RightHandCollisionBox->SetupAttachment(GetMesh());
+	RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnHandCollisionBoxBeginOverlap);
+
 	// 전투 컴포넌트
 	EnemyCombatComponent = CreateDefaultSubobject<UPA_EnemyCombatComponent>(TEXT("EnemyCombatComponent"));
 
@@ -53,6 +68,22 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 
 	// 최대 이동속도 변경 콜백 함수 바인딩
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterEnemy::OnMaxMovementSpeedChanged);
+}
+
+void APA_CharacterEnemy::OnHandCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (APawn* HitPawn = Cast<APawn>(OtherActor))
+	{
+		// 오버랩된 대상이 적대적인 경우
+		if (UPA_FunctionLibrary::IsTargetPawnHostile(this, HitPawn))
+		{
+			// 타격 지점 얻기
+			FHitResult AttackHit = UPA_FunctionLibrary::GetAttackHitResult(this, OtherActor);
+
+			// 상호작용 시작 이벤트 호출
+			GetEnemyCombatComponent()->OnWeaponHitStartTargetActor(OtherActor, AttackHit);
+		}
+	}
 }
 
 UPA_PawnCombatComponent* APA_CharacterEnemy::GetPawnCombatComponent() const
@@ -86,6 +117,9 @@ void APA_CharacterEnemy::OnEnemyDied(float InDuration, float InUpdateInterval, T
 
 	// 사망 머티리얼 효과 (디졸브) 재생
 	UpdateMaterialParameter(InDuration, InUpdateInterval);
+
+	// 자기가 그린 위젯 제거
+	GetEnemyUIComponent()->RemoveEnemyDrawnWidgetsIfAny();
 
 	// 액터가 소멸될 때 비동기 작업이 진행 중일 수 있으므로 약 참조 사용
 	TWeakObjectPtr<APA_CharacterEnemy> WeakTHis = this;
@@ -143,6 +177,24 @@ void APA_CharacterEnemy::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitEnemyStartUpData();
+}
+
+void APA_CharacterEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// 에디터에서 변경한 속성 값이 콜리전 부착 본 이름인지 확인
+	// 왼손 콜리전을 왼손 콜리전을 부착할 본에 부착
+	if (PropertyChangedEvent.GetMemberPropertyName() == GET_MEMBER_NAME_CHECKED(ThisClass, LeftHandCollisionBoxAttachBoneName))
+	{
+		LeftHandCollisionBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftHandCollisionBoxAttachBoneName);
+	}
+
+	// 오른손 콜리전을 왼손 콜리전을 부착할 본에 부착
+	if (PropertyChangedEvent.GetMemberPropertyName() == GET_MEMBER_NAME_CHECKED(ThisClass, RightHandCollisionBoxAttachBoneName))
+	{
+		RightHandCollisionBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightHandCollisionBoxAttachBoneName);
+	}
 }
 
 void APA_CharacterEnemy::UpdateMaterialParameter(float InDuration, float InUpdateInterval)

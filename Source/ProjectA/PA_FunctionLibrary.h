@@ -51,4 +51,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Custom | FunctionLibrary")
 	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
 
+	// 공격 충돌 HitResult 반환 함수
+	UFUNCTION(BlueprintPure, Category = "Custom | FunctionLibrary")
+	static FHitResult GetAttackHitResult(AActor* InAttacker, AActor* InVictim);
+
 };

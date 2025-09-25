@@ -168,7 +168,7 @@ void APA_CharacterPlayer::OnCameraZoom(const FInputActionValue& InputActionValue
 {
 	float AxisValue = -InputActionValue.Get<float>();
 
-	float ZoomValue = FMath::Clamp((SpringArm->TargetArmLength + AxisValue * 500.f), 400.f, 1000.f);
+	float ZoomValue = FMath::Clamp((SpringArm->TargetArmLength + AxisValue * 500.f), 400.f, 1500.f);
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ZoomValue, GetWorld()->GetDeltaSeconds(), 10.f);
 }
 
@@ -246,6 +246,8 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 			// 카메라 마스킹된 장애물 배열을 모두 순회하여 마스킹 값을 1로 초기화 (불투명화)
 			for (TWeakObjectPtr<UPrimitiveComponent> HitComp : CameraMaskingObstacle)
 			{
+				if (!HitComp.IsValid()) break;
+
 				const int32 Materials = HitComp->GetNumMaterials();
 				for (int32 MatIndex = 0; MatIndex < Materials; ++MatIndex)
 				{

@@ -52,18 +52,10 @@ void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			TPair<bool, FHitResult> AttackHit = GetAttackHitResult(OtherActor);
+			FHitResult AttackHit = UPA_FunctionLibrary::GetAttackHitResult(this, OtherActor);
 
-			if (AttackHit.Key)
-			{
-				// 상호작용 시작 이벤트 호출
-				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
-			}
-			else
-			{
-				// 상호작용 시작 이벤트 호출
-				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
-			}
+			// 상호작용 시작 이벤트 호출
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit);
 		}
 	}
 }
@@ -96,18 +88,10 @@ void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* Overla
 		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			TPair<bool, FHitResult> AttackHit = GetAttackHitResult(OtherActor);
+			FHitResult AttackHit = UPA_FunctionLibrary::GetAttackHitResult(this, OtherActor);
 
-			if (AttackHit.Key)
-			{
-				// 상호작용 시작 이벤트 호출
-				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
-			}
-			else
-			{
-				// 상호작용 시작 이벤트 호출
-				OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit.Value);
-			}
+			// 상호작용 시작 이벤트 호출
+			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, AttackHit);
 		}
 	}
 }
@@ -127,32 +111,4 @@ void APA_BaseWeapon::OnRightCollisionBoxEndOverlap(UPrimitiveComponent* Overlapp
 			OnWeaponTargetHitStart.ExecuteIfBound(OtherActor, FHitResult());
 		}
 	}
-}
-
-TPair<bool, FHitResult> APA_BaseWeapon::GetAttackHitResult(AActor* HitActor)
-{
-	TPair<bool, FHitResult> Ret;
-
-	if (APawn* HitPawn = Cast<APawn>(HitActor))
-	{
-		// 트레이스로 공격 충돌 지점 HitResult 얻기
-		FHitResult AttackHit;
-		FVector Start = GetActorLocation(); // 또는 무기 끝점
-		FVector End = HitPawn->GetActorLocation(); // 또는 충돌 지점 추정
-		FCollisionQueryParams Params(NAME_None, true, GetOwner());
-		Params.AddIgnoredActor(this);
-		Params.AddIgnoredActor(GetOwner());
-
-		bool bHit = GetWorld()->LineTraceSingleByChannel(AttackHit, Start, End, ECC_Pawn, Params);
-		if (bHit)
-		{
-			Ret.Key = false;
-			Ret.Value = AttackHit;
-			return Ret;
-		}
-	}
-
-	Ret.Key = false;
-	Ret.Value = FHitResult();
-	return Ret;
 }

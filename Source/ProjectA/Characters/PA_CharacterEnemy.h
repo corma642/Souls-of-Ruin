@@ -18,6 +18,11 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	// 에디터에서 속성 값 변경 시, 호출되는 함수
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
 private:
 	// 캐릭터의 스켈레탈 메쉬 배열 (자손 포함)
 	TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
@@ -35,6 +40,14 @@ private:
 public:
 	FORCEINLINE class UPA_EnemyCombatComponent* GetEnemyCombatComponent() const { return EnemyCombatComponent; }
 
+	// 손 콜리전 Getter/Setter
+	FORCEINLINE class UBoxComponent* GetLeftHandCollisionBox() const { return LeftHandCollisionBox; }
+	FORCEINLINE class UBoxComponent* GetRightHandCollisionBox() const { return RightHandCollisionBox; }
+
+	// 손 콜리전 오버랩 함수
+	UFUNCTION()
+	void OnHandCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	// 적 전투 컴포넌트 가져오기 인터페이스 함수
 	/* ICombatInterface Interface */
 	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
@@ -43,6 +56,23 @@ public:
 	// 적 사망 함수 [사망 머티리얼 효과 재생 시간, 효과 재생 간격, 사망 디졸브 나이아가라 시스템, 나이아가라 디졸브 색상]
 	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
 	void OnEnemyDied(float InDuration, float InUpdateInterval, TSoftObjectPtr<class UNiagaraSystem> DissolveNiagara, FLinearColor DissolveNiagaraColor);
+
+protected:
+	// 왼손 콜리전
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat")
+	TObjectPtr<class UBoxComponent> LeftHandCollisionBox;
+
+	// 왼손 콜리전을 부착할 본 이름
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Combat")
+	FName LeftHandCollisionBoxAttachBoneName;
+
+	// 오른손 콜리전
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Custom | Combat")
+	TObjectPtr<class UBoxComponent> RightHandCollisionBox;
+
+	// 오른손 콜리전을 부착할 본 이름
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Combat")
+	FName RightHandCollisionBoxAttachBoneName;
 
 private:
 	// 사망 머티리얼 효과 (디졸브) 함수
