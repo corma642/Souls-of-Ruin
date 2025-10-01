@@ -230,6 +230,7 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 		bool bOnlyPlayerDetected = true;
 		for (const FHitResult& Hit : HitResults)
 		{
+			// 트레이싱된 물체가 하나라도 있으면 루프 종료
 			if (Hit.GetComponent() != GetCapsuleComponent())
 			{
 				bOnlyPlayerDetected = false;
@@ -238,12 +239,12 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 		}
 
 		// 트레이싱된 물체가 플레이어뿐인 경우
-		// 카메라에 마스킹된 장애물들의 마스킹을 초기화
 		if (bOnlyPlayerDetected)
 		{
+			// 카메라에 마스킹된 장애물 배열이 없으면 반환
 			if (CameraMaskingObstacle.IsEmpty()) return;
 
-			// 카메라 마스킹된 장애물 배열을 모두 순회하여 마스킹 값을 1로 초기화 (불투명화)
+			// 카메라 마스킹된 장애물 배열을 모두 순회
 			for (TWeakObjectPtr<UPrimitiveComponent> HitComp : CameraMaskingObstacle)
 			{
 				if (!HitComp.IsValid()) break;
@@ -251,16 +252,21 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 				const int32 Materials = HitComp->GetNumMaterials();
 				for (int32 MatIndex = 0; MatIndex < Materials; ++MatIndex)
 				{
+					// DynamicMaterialInstance 생성
 					UMaterialInstanceDynamic* DynamicMaterial = HitComp->CreateDynamicMaterialInstance(MatIndex, HitComp->GetMaterial(MatIndex));
 
+					// CameraMask Scalar값을 1로 설정 (불투명화)
 					if (DynamicMaterial)
 					{
 						DynamicMaterial->SetScalarParameterValue(TEXT("CameraMask"), 1.0f);
 					}
 				}
 			}
+
+			// 카메라에 마스킹된 장애물 배열 초기화
 			CameraMaskingObstacle.Empty();
 		}
+		// 트레이싱된 물체가 있는 경우
 		else
 		{
 			// 충돌 배열을 모두 순회
@@ -275,8 +281,10 @@ void APA_CharacterPlayer::CameraMaskUpdate()
 					const int32 Materials = HitComp->GetNumMaterials();
 					for (int32 MatIndex = 0; MatIndex < Materials; ++MatIndex)
 					{
+						// DynamicMaterialInstance 생성
 						UMaterialInstanceDynamic* DynamicMaterial = HitComp->CreateDynamicMaterialInstance(MatIndex, HitComp->GetMaterial(MatIndex));
 
+						// CameraMask Scalar값을 0으로 설정 (투명화)
 						if (DynamicMaterial)
 						{
 							DynamicMaterial->SetScalarParameterValue(TEXT("CameraMask"), 0.0f);

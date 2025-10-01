@@ -12,7 +12,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-// 기본 AI 길찾기 군중 우회(UCrowdFollowingComponent)로 설정
+// 기본 AI 회피 시스템을 군중 우회 회피(Defour Crowd Avoidence) 시스템으로 설정
 APA_AIController::APA_AIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
@@ -28,9 +28,9 @@ APA_AIController::APA_AIController(const FObjectInitializer& ObjectInitializer)
 	AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = false;
 
 	// 시야 범위 설정
-	AISenseConfig_Sight->SightRadius = 750.0f; // 시야 반경
-	AISenseConfig_Sight->LoseSightRadius = 1000.0f; // 시야 상실 반경
-	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 120.0f; // 주변 시야 각도
+	AISenseConfig_Sight->SightRadius = 1000.0f; // 시야 반경
+	AISenseConfig_Sight->LoseSightRadius = 1500.0f; // 시야 상실 반경
+	AISenseConfig_Sight->PeripheralVisionAngleDegrees = 150.0f; // 주변 시야 각도
 
 
 	EnemyPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("EnemyPerceptionComponent"));
@@ -79,6 +79,11 @@ void APA_AIController::BeginPlay()
 		case 4: CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);		break;
 		default: break;
 		}
+
+		// 군중 분리 활성화
+		CrowdComp->SetCrowdSeparation(true);
+		CrowdComp->SetCrowdSeparationWeight(50.f);
+		CrowdComp->SetCrowdAvoidanceRangeMultiplier(1.1f);
 
 		// 회피 그룹 설정
 		// 같은 그룹에 속한 AI들끼리 서로 회피하도록 설정

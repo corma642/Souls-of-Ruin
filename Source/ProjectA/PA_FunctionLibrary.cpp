@@ -97,7 +97,7 @@ UPA_PawnCombatComponent* UPA_FunctionLibrary::BP_GetPawnCombatComponentFromActor
 
 bool UPA_FunctionLibrary::IsTargetPawnHostile(const APawn* MyPawn, const APawn* TargetPawn)
 {
-	check(MyPawn || TargetPawn);
+	if (!MyPawn || !TargetPawn) return false;
 
 	// 두 폰의 일반 팀 ID를 캐스팅을 통해 가져옴
 	const IGenericTeamAgentInterface* MyPawnTeamAgent = Cast<IGenericTeamAgentInterface>(MyPawn->GetController());

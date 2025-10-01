@@ -17,7 +17,7 @@ public:
 	virtual void GiveToAbilitySystemComponent(class UPA_AbilitySystemComponent* InASCToGive) override;
 
 protected:
-	// 플레이어 시작 어빌리티 세트
+	// 플레이어 시작 무기 어빌리티 세트
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Custom | StartUpData")
 	TArray<FPlayerWeaponAbilitySet> PlayerStartUpAbiltySets;
 };

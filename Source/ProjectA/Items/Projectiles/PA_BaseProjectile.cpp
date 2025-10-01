@@ -39,8 +39,8 @@ APA_BaseProjectile::APA_BaseProjectile()
 	ProjectileMovementComp->ProjectileGravityScale = 0.f;			// 중력 영향 X
 
 	// 오버랩 함수 바인딩
-	ProjectileCollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnProjectileHit);
-	ProjectileCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnProjectileBeginOverlap);
+	ProjectileCollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnProjectileHit);
+	ProjectileCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnProjectileBeginOverlap);
 }
 
 void APA_BaseProjectile::BeginPlay()
@@ -54,11 +54,14 @@ void APA_BaseProjectile::BeginPlay()
 
 void APA_BaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	// 피격 대상이 Instigator면 넘어감
+	if (!OtherActor || OtherActor == GetInstigator()) return;
+
 	// 피격 대상이 적대적이지 않으면 즉시 제거
 	if (!OtherActor || !UPA_FunctionLibrary::IsTargetPawnHostile(GetInstigator(), Cast<APawn>(OtherActor)))
 	{
 		// 발사체 피격 FX 스폰
-		BP_OnSpawnProjectileHitFX(Hit.ImpactPoint);
+		BP_OnSpawnProjectileHitFX(Hit.ImpactPoint, false);
 		Destroy();
 		return;
 	}
@@ -89,7 +92,7 @@ void APA_BaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AAct
 	else
 	{
 		// 발사체 피격 FX 스폰
-		BP_OnSpawnProjectileHitFX(Hit.ImpactPoint);
+		BP_OnSpawnProjectileHitFX(Hit.ImpactPoint, true);
 
 		// 발사체 대미지 이펙트 스펙 핸들 적용
 		HandleApplyProjectileDamage(Cast<APawn>(OtherActor), Payload);

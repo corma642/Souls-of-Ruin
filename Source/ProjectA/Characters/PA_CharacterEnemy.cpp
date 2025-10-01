@@ -43,7 +43,7 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 180.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
-
+	
 	// 왼손 콜리전 박스 컴포넌트
 	LeftHandCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftHandCollisionBox"));
 	LeftHandCollisionBox->SetupAttachment(GetMesh());

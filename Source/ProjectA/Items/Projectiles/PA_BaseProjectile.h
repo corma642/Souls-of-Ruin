@@ -34,7 +34,7 @@ protected:
 
 	// 발사체 피격 FX
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Spawn Projectile Hit FX"))
-	void BP_OnSpawnProjectileHitFX(const FVector& HitLocation);
+	void BP_OnSpawnProjectileHitFX(const FVector& HitLocation, bool IsPlayer);
 
 	// 발사체 피해 적용 함수
 	void HandleApplyProjectileDamage(APawn* InHitPawn, const struct FGameplayEventData& InPayload);

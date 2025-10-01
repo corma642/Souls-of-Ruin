@@ -9,6 +9,7 @@ void UDA_EnemyStartUpData::GiveToAbilitySystemComponent(UPA_AbilitySystemCompone
 {
 	Super::GiveToAbilitySystemComponent(InASCToGive);
 
+	// 적 전투 어빌리티를 순회하여 적에게 부여
 	for (const TSubclassOf<UPA_EnemyGameplayAbility>& Ability : EnemyCombatAbilities)
 	{
 		if (!Ability) continue;
