@@ -22,6 +22,13 @@ void UPA_EnemyCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, con
 	OverlappedActors.AddUnique(HitActor);
 
 	UAbilitySystemComponent* ASC = Enemy->GetAbilitySystemComponent();
+	
+	// 무적 여부
+	bool bIsInvincible = UPA_FunctionLibrary::NativeIsInvincible(HitActor);
+	if (bIsInvincible)
+	{
+		return;
+	}
 
 	// 막기 유효 여부
 	bool bIsValidBlock = UPA_FunctionLibrary::NativeIsValidBlock(GetOwner(), HitActor);
@@ -36,6 +43,7 @@ void UPA_EnemyCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, con
 	EffectContext.AddHitResult(HitResult, false);
 	Payload.ContextHandle = EffectContext;
 
+	// 막기 성공
 	if (bIsValidBlock)
 	{
 		GEngine->AddOnScreenDebugMessage(5, 3.f, FColor::Green, FString("Successed Block!!"));

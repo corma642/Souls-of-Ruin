@@ -47,10 +47,13 @@ void UPA_AbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InIn
 	}
 }
 
-void UPA_AbilitySystemComponent::GrantPlayerWeaponAbilities(const TArray<FPlayerWeaponAbilitySet>& InAbilitiesToGrant)
+void UPA_AbilitySystemComponent::GrantPlayerWeaponAbilities(
+	const TArray<FPlayerWeaponAbilitySet>& InAbilitiesToGrant,
+	const TArray<FPlayerWeaponSkillAbilityData>& InWeaponSkillAbilities
+)
 {
+	// 무기 기본 어빌리티 배열을 순회하며 부여
 	if (InAbilitiesToGrant.IsEmpty()) return;
-
 	for (const FPlayerWeaponAbilitySet& AbilitySet : InAbilitiesToGrant)
 	{
 		if (!AbilitySet.IsValid()) return;
@@ -59,7 +62,21 @@ void UPA_AbilitySystemComponent::GrantPlayerWeaponAbilities(const TArray<FPlayer
 		AbilitySpec.SourceObject = GetAvatarActor();
 		AbilitySpec.DynamicAbilityTags.AddTag(AbilitySet.InputTag);
 
-		// 무기 어빌리티 부여 및 스펙 핸들 저장
+		// 어빌리티 부여 및 스펙 핸들 저장
+		GrantedPlayerWeaponAbilities.AddUnique(GiveAbility(AbilitySpec));
+	}
+
+	// 무기 스킬 어빌리티 배열을 순회하며 부여
+	if (InWeaponSkillAbilities.IsEmpty()) return;
+	for (const FPlayerWeaponSkillAbilityData& WeaponSkillAbility : InWeaponSkillAbilities)
+	{
+		if (!WeaponSkillAbility.IsValid()) return;
+
+		FGameplayAbilitySpec AbilitySpec(WeaponSkillAbility.AbilityToGrant.Get());
+		AbilitySpec.SourceObject = GetAvatarActor();
+		AbilitySpec.DynamicAbilityTags.AddTag(WeaponSkillAbility.InputTag);
+
+		// 어빌리티 부여 및 스펙 핸들 저장
 		GrantedPlayerWeaponAbilities.AddUnique(GiveAbility(AbilitySpec));
 	}
 }

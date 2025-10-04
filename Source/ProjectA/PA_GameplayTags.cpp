@@ -14,6 +14,11 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_SprintAttack_DualWield, "InputTag.Attack.SprintAttack.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_ChangeLockOnTarget, "InputTag.ChangeLockOnTarget");
 
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Skill_1, "InputTag.Skill.1");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Skill_2, "InputTag.Skill.2");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Skill_3, "InputTag.Skill.3");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Skill_4, "InputTag.Skill.4");
+
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable, "InputTag.Toggleable");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Toggleable_TargetLockOn, "InputTag.Toggleable.TargetLockOn");
 
@@ -33,6 +38,11 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Block, "Player.Ability.Block");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_TargetLockOn, "Player.Ability.TargetLockOn");
 
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Skill_1, "Player.Ability.Skill.1");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Skill_2, "Player.Ability.Skill.2");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Skill_3, "Player.Ability.Skill.3");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Skill_4, "Player.Ability.Skill.4");
+
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_Equip_DualWield, "Player.Event.Equip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_UnEquip_DualWield, "Player.Event.UnEquip.DualWield");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_NextComboAttack, "Player.Event.NextComboAttack");
@@ -48,6 +58,11 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rolling, "Player.Status.Rolling");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Blocking, "Player.Status.Blocking");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_TargetLockOn, "Player.Status.TargetLockOn");
+
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_1, "Player.Cooldown.Skill_1");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_2, "Player.Cooldown.Skill_2");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_3, "Player.Cooldown.Skill_3");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_4, "Player.Cooldown.Skill_4");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");
 
@@ -75,6 +90,7 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_ThrowProjectile, "Shared.Event.ThrowProjectile");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Dead, "Shared.Status.Dead");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Invincible, "Shared.Status.Invincible");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
 }

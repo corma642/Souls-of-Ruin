@@ -66,6 +66,13 @@ void APA_BaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AAct
 		return;
 	}
 
+	// 무적 여부
+	bool bIsInvincible = UPA_FunctionLibrary::NativeIsInvincible(OtherActor);
+	if (bIsInvincible)
+	{
+		return;
+	}
+
 	// 피해자의 막기 유효 여부 확인
 	bool bIsValidBlock = UPA_FunctionLibrary::NativeIsValidBlock(GetInstigator(), OtherActor);
 

@@ -7,6 +7,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
+#include "PA_FunctionLibrary.h"
 #include "PA_GameplayTags.h"
 
 UPA_PlayerCombatComponent::UPA_PlayerCombatComponent()
@@ -28,7 +29,7 @@ float UPA_PlayerCombatComponent::GetPlayerCurrentEquippingWeaponDamage() const
 {
 	if (APA_PlayerWeapon* PlayerWeapon = GetPlayerCurrentEquippingWeapon())
 	{
-		return PlayerWeapon->PlayerWeaponData.BaseWeaponDamage;
+		return PlayerWeapon->PlayerWeaponData.WeaponStats.GetValueAtLevel(1);
 	}
 	return 0.0f;
 }
@@ -41,6 +42,13 @@ void UPA_PlayerCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, co
 	OverlappedActors.AddUnique(HitActor);
 
 	UAbilitySystemComponent* ASC = Player->GetAbilitySystemComponent();
+
+	// 무적 여부
+	bool bIsInvincible = UPA_FunctionLibrary::NativeIsInvincible(HitActor);
+	if (bIsInvincible)
+	{
+		return;
+	}
 
 	// 게임플레이 이벤트 데이터를 만들어, 충돌한 대상을 저장
 	FGameplayEventData Payload;

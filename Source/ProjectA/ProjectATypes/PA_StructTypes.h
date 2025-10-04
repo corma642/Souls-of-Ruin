@@ -2,6 +2,7 @@
 
 #include "InputActionValue.h"
 #include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 #include "PA_StructTypes.generated.h"
 
 // 플레이어 무기 어빌리티 세트
@@ -10,7 +11,6 @@ struct FPlayerWeaponAbilitySet
 {
 	GENERATED_BODY()
 
-public:
 	// 어빌리티 입력 태그
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Category = "InputTag"))
 	FGameplayTag InputTag;
@@ -22,13 +22,27 @@ public:
 	bool IsValid() const;
 };
 
+// 플레이어 무기 스킬 어빌리티 데이터
+USTRUCT(BlueprintType)
+struct FPlayerWeaponSkillAbilityData : public FPlayerWeaponAbilitySet
+{
+	GENERATED_BODY()
+
+	// 무기 스킬의 아이콘 머티리얼
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	TSoftObjectPtr<UMaterialInterface> SoftSkillIconMaterial;
+
+	// 무기 스킬의 쿨타임 태그
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Category = "Player.Cooldown"))
+	FGameplayTag SkillCooldownTag;
+};
+
 // 플레이어 무기 데이터
 USTRUCT(BlueprintType)
 struct FPlayerWeaponData
 {
 	GENERATED_BODY()
 
-public:
 	// 무기 애님 레이어 링크
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	TSubclassOf<class UPA_PlayerLinkedAnimLayer> WeaponAnimLayerToLink;
@@ -41,7 +55,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	TArray<FPlayerWeaponAbilitySet> DefaultWeaponAbilities;
 
-	// 기본 무기 피해량
+	// 무기 스킬 어빌리티 데이터 배열
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
-	float BaseWeaponDamage;
+	TArray<FPlayerWeaponSkillAbilityData> WeaponSkillAbilities;
+
+	// 무기 스탯 데이터
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
+	FScalableFloat WeaponStats;
 };

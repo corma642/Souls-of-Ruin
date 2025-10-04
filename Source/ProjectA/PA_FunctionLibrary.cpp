@@ -22,7 +22,7 @@ UPA_PawnCombatComponent* UPA_FunctionLibrary::NativeGetPawnCombatComponentFromAc
 UPA_AbilitySystemComponent* UPA_FunctionLibrary::NativeGetPAAbilitySystemComponentFromActor(AActor* InActor)
 {
 	check(InActor);
-	return CastChecked<UPA_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
+	return Cast<UPA_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
 }
 
 bool UPA_FunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck)
@@ -36,10 +36,10 @@ bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVicti
 	bool bIsValidBlock = false;
 
 	// 피해자에게 "막는 중" 태그 보유중인지 검사
-	const bool bIsVictimBlocking = UPA_FunctionLibrary::NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
+	const bool bIsVictimBlocking = NativeDoesActorHaveTag(InVictim, PA_GameplayTags::Player_Status_Blocking);
 
 	// 공격자의 공격이 막기를 뚫는 공격인지 검사
-	const bool bIsAttackUnblockable = UPA_FunctionLibrary::NativeDoesActorHaveTag(InAttacker, PA_GameplayTags::Enemy_Status_UnBlockable);
+	const bool bIsAttackUnblockable = NativeDoesActorHaveTag(InAttacker, PA_GameplayTags::Enemy_Status_UnBlockable);
 
 	// 피해자가 막는 중이고, 공격자의 공격은 막기를 뚫지 못할 경우
 	if (bIsVictimBlocking && !bIsAttackUnblockable)
@@ -52,6 +52,14 @@ bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVicti
 	}
 
 	return bIsValidBlock;
+}
+
+bool UPA_FunctionLibrary::NativeIsInvincible(AActor* InActor)
+{
+	if (!InActor) return false;
+
+	// 액터의 무적 상태 태그 보유 여부를 반환
+	return NativeDoesActorHaveTag(InActor, PA_GameplayTags::Shared_Status_Invincible);
 }
 
 void UPA_FunctionLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag InTag)

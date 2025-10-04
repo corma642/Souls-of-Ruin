@@ -22,6 +22,9 @@ public:
 	// 막기 유효 여부 반환 함수
 	static bool NativeIsValidBlock(AActor* InAttacker, AActor* InVictim);
 
+	// 무적 여부 반환 함수
+	static bool NativeIsInvincible(AActor* InActor);
+
 public:
 	// 액터에 태그 추가하는 함수 (중복인 경우 패스)
 	UFUNCTION(BlueprintCallable, Category = "Custom | FunctionLibrary")
