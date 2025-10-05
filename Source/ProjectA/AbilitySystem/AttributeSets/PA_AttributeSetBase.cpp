@@ -78,13 +78,21 @@ void UPA_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 	// 받은 피해량 변경
 	else if (Data.EvaluatedData.Attribute == GetDamageTakenAttribute())
 	{
+		// 받은 피해량 출력 이벤트 전달
+		{
+			FGameplayEventData Payload;
+			Payload.EventTag = PA_GameplayTags::Shared_Event_DrawDamageNumber;
+			Payload.EventMagnitude = GetDamageTaken(); // 최종 피해량을 Magnitude에 담아 전송
+
+			UAbilitySystemComponent* TargetASC = &Data.Target;
+			TargetASC->HandleGameplayEvent(Payload.EventTag, &Payload);
+		}
+
 		// 현재 체력에서 받은 피해량 만큼 차감
 		SetCurrentHealth(FMath::Clamp(GetCurrentHealth() - GetDamageTaken(), 0.0f, GetMaxHealth()));
 
 		// 현재 체력 변경 브로드캐스트
 		UIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth() / GetMaxHealth());
-
-		GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Cyan, FString::Printf(TEXT("MaxHP: %f, CurrentHP: %f"), GetMaxHealth(), GetCurrentHealth()));
 
 		// 현재 체력이 0보다 작은 경우
 		if (GetCurrentHealth() <= KINDA_SMALL_NUMBER)
