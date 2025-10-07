@@ -18,13 +18,6 @@ void UGA_Player_LightAttackMaster::ActivateAbility(const FGameplayAbilitySpecHan
 		CurrentCombo = 1;
 	}
 
-	// 스태미나가 부족한 경우 어빌리티 사용 실패
-	if (!HaveEnoughStamina(UseStamina))
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-		return;
-	}
-
 	if (!bHasConsumedStamina)
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);

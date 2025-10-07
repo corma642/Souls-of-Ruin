@@ -10,6 +10,18 @@
 
 #include "PA_GameplayTags.h"
 
+void UPA_PlayerGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo * ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData * TriggerEventData)
+{
+	// 스태미나가 부족한 경우 어빌리티 사용 실패
+	if (!HaveEnoughStamina(UseStamina))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+		return;
+	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
 APA_CharacterPlayer* UPA_PlayerGameplayAbility::GetPlayerCharacterFromActorInfo()
 {
 	// 플레이어 캐릭터를 가져올 때 마다, 캐스팅하는 비용을 줄이기 위해 캐시 데이터 활용

@@ -12,6 +12,8 @@ class PROJECTA_API UPA_PlayerGameplayAbility : public UPA_GameplayAbility
 	GENERATED_BODY()
 
 public:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
 	// 플레이어 캐릭터 가져오기
 	UFUNCTION(BlueprintPure, Category = "Custom | Ability")
 	class APA_CharacterPlayer* GetPlayerCharacterFromActorInfo();
