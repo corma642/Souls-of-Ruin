@@ -32,6 +32,10 @@ struct FPlayerWeaponSkillAbilityData : public FPlayerWeaponAbilitySet
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Custom | Ability")
 	TSoftObjectPtr<UMaterialInterface> SoftSkillIconMaterial;
 
+	// 무기 스킬의 대미지
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat SkillDamage;
+
 	// 무기 스킬의 쿨타임 태그
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Category = "Player.Cooldown"))
 	FGameplayTag SkillCooldownTag;

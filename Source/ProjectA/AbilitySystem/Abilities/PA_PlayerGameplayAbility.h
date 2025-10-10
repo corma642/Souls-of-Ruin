@@ -46,9 +46,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
 	FGameplayEffectSpecHandle MakePlayerDamageEffectSpecHandle(
 		TSubclassOf<UGameplayEffect> EffectClass,
-		float InBaseWeaponDamage,
 		FGameplayTag InCurrentAttackTypeTag,
-		int32 InComboAttackCount
+		float InWeaponDamage = 0,
+		float InWeaponSkillDamage = 0,
+		int32 InComboAttackCount = 0
 	);
 
 	// 스태미나 소모량

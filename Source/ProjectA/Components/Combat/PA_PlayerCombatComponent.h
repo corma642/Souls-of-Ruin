@@ -28,6 +28,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
 	float GetPlayerCurrentEquippingWeaponDamage() const;
 
+	// 현재 플레이어에 장착된 무기의 스킬 대미지를 가져오는 함수
+	UFUNCTION(BlueprintPure, Category = "Custom | Combat")
+	float GetPlayerCurrentEquippingWeaponSkillDamage(const int InSkillNumber) const;
+
 
 	///////////////////////////////////////////////////////////////////////////
 	/* Interaction */

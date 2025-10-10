@@ -7,6 +7,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 #include "PA_FunctionLibrary.h"
+#include "PA_GameplayTags.h"
 
 void UPA_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -120,4 +121,43 @@ FActiveGameplayEffectHandle UPA_GameplayAbility::BP_ApplyEffectSpecHandleToTarge
 	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EPA_SuccessType::SuccessFul : EPA_SuccessType::Failed;
 
 	return ActiveGameplayEffectHandle;
+}
+
+void UPA_GameplayAbility::ApplyEffectSpecHandleToActors(const TArray<AActor*>& InHitActors, const FGameplayEffectSpecHandle& InSpecHandle)
+{
+	// 충돌 배열이 비어있으면 종료
+	if (InHitActors.IsEmpty()) return;
+
+	// 공격자를 Pawn으로 캐스팅
+	APawn* OwningPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+
+	// 충돌 배열을 순회
+	for (AActor* HitActor : InHitActors)
+	{
+		// 피해자(충돌 대상)를 Pawn으로 캐스팅
+		if (APawn* HitPawn = Cast<APawn>(HitActor))
+		{
+			// 공격자와 피해자가 서로 적대적인지 확인
+			if (UPA_FunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
+			{
+				// 피해자에게 이펙트 적용
+				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(HitPawn, InSpecHandle);
+
+				// 이펙트 적용에 성공했으면, 피해자에게 피격 액션 이벤트 태그 전달
+				if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
+				{
+					// 이벤트 데이터 생성
+					FGameplayEventData Payload;
+					Payload.Instigator = OwningPawn;
+					Payload.Target = HitPawn;
+
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+						HitPawn,
+						PA_GameplayTags::Shared_Event_HitReact,
+						Payload
+					);
+				}
+			}
+		}
+	}
 }

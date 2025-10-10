@@ -53,10 +53,13 @@ protected:
 	///////////////////////////////////////////////////////////////////////////
 	/* Combat */
 protected:
-	// 대상에게 게임플레이 이펙트 스펙 핸들 적용하는 함수
+	// 단일 대상에게 게임플레이 이펙트 스펙 핸들 적용하는 함수
 	FActiveGameplayEffectHandle NativeApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Custom | Combat", meta = (DisplayName = "Apply Effect Spec Handle To Target", ExpandEnumAsExecs = "OutSuccessType"))
 	FActiveGameplayEffectHandle BP_ApplyEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle, EPA_SuccessType& OutSuccessType);
 
+	// 여러 대상에게 게임플레이 이펙트 스펙 핸들 적용하는 함수
+	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
+	void ApplyEffectSpecHandleToActors(const TArray<AActor*>& InHitActors, const FGameplayEffectSpecHandle& InSpecHandle);
 };

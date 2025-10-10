@@ -53,7 +53,12 @@ bool UPA_PlayerGameplayAbility::HaveEnoughStamina(const float InUseStamina)
 	return GetPlayerCharacterFromActorInfo()->GetAttributeSet()->GetCurrentStamina() >= InUseStamina;
 }
 
-FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InBaseWeaponDamage, FGameplayTag InCurrentAttackTypeTag, int32 InComboAttackCount)
+FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecHandle(
+	TSubclassOf<UGameplayEffect> EffectClass,
+	FGameplayTag InCurrentAttackTypeTag,
+	float InWeaponDamage,
+	float InWeaponSkillDamage,
+	int32 InComboAttackCount)
 {
 	// 게임플레이 이펙트 콘텍스트 핸들 생성
 	FGameplayEffectContextHandle ContextHandle = GetPAAbilitySystemComponentFromActorInfo()->MakeEffectContext();
@@ -67,7 +72,8 @@ FGameplayEffectSpecHandle UPA_PlayerGameplayAbility::MakePlayerDamageEffectSpecH
 	FGameplayEffectSpecHandle Spec = GetPAAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(EffectClass, 1, ContextHandle);
 
 	// 기본 대미지 태그에 무기 기본 피해량 저장
-	Spec.Data->SetSetByCallerMagnitude(PA_GameplayTags::Shared_SetByCaller_BaseDamage, InBaseWeaponDamage);
+	// 무기 공격력 + 스킬 대미지
+	Spec.Data->SetSetByCallerMagnitude(PA_GameplayTags::Shared_SetByCaller_BaseDamage, InWeaponDamage + InWeaponSkillDamage);
 
 	// 현재 공격에 유형 태그가 있는 경우
 	if (InCurrentAttackTypeTag.IsValid())

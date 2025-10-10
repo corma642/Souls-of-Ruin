@@ -34,6 +34,23 @@ float UPA_PlayerCombatComponent::GetPlayerCurrentEquippingWeaponDamage() const
 	return 0.0f;
 }
 
+float UPA_PlayerCombatComponent::GetPlayerCurrentEquippingWeaponSkillDamage(const int InSkillNumber) const
+{
+	// 현재 플레이어에 장착된 무기의 스킬 중, 특정 스킬의 대미지 반환
+	if (APA_PlayerWeapon* PlayerWeapon = GetPlayerCurrentEquippingWeapon())
+	{
+		if (PlayerWeapon->PlayerWeaponData.WeaponSkillAbilities.IsValidIndex(InSkillNumber - 1))
+		{
+			if (PlayerWeapon->PlayerWeaponData.WeaponSkillAbilities[InSkillNumber - 1].IsValid())
+			{
+				// 무기 스킬 인덱스에 접근해서 해당 무기 스킬의 대미지 반환
+				return PlayerWeapon->PlayerWeaponData.WeaponSkillAbilities[InSkillNumber - 1].SkillDamage.GetValue();
+			}
+		}
+	}
+	return 0.0f;
+}
+
 void UPA_PlayerCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, const FHitResult& HitResult)
 {
 	// 이미 오버랩 배열에 존재하는 액터는 무시
