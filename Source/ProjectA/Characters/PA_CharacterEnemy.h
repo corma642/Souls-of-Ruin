@@ -53,7 +53,13 @@ public:
 	virtual UPA_PawnCombatComponent* GetPawnCombatComponent() const override;
 	/* ICombatInterface Interface */
 
-	// 적 사망 함수 [사망 머티리얼 효과 재생 시간, 효과 재생 간격, 사망 디졸브 나이아가라 시스템, 나이아가라 디졸브 색상]
+	/*
+	* 적 사망 함수
+	* InDuration			: 사망 머티리얼 효과 재생 시간
+	* InUpdateInterval		: 효과 재생 업데이트 간격
+	* DissolveNiagara		: 사망 디졸브 나이아가라 시스템
+	* DissolveNiagaraColor	: 나이아가라 디졸브 색상
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Custom | Combat")
 	void OnEnemyDied(float InDuration, float InUpdateInterval, TSoftObjectPtr<class UNiagaraSystem> DissolveNiagara, FLinearColor DissolveNiagaraColor);
 

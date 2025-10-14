@@ -58,7 +58,7 @@ void APA_BaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AAct
 	if (!OtherActor || OtherActor == GetInstigator()) return;
 
 	// 피격 대상이 적대적이지 않으면 즉시 제거
-	if (!OtherActor || !UPA_FunctionLibrary::IsTargetPawnHostile(GetInstigator(), Cast<APawn>(OtherActor)))
+	if (!UPA_FunctionLibrary::IsTargetPawnHostile(GetInstigator(), Cast<APawn>(OtherActor)))
 	{
 		// 발사체 피격 FX 스폰
 		BP_OnSpawnProjectileHitFX(Hit.ImpactPoint, false);
@@ -70,6 +70,7 @@ void APA_BaseProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AAct
 	bool bIsInvincible = UPA_FunctionLibrary::NativeIsInvincible(OtherActor);
 	if (bIsInvincible)
 	{
+		Destroy();
 		return;
 	}
 

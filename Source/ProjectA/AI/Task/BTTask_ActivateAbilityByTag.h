@@ -6,16 +6,6 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_ActivateAbilityByTag.generated.h"
 
-// 태스크 상태 저장 메모리 구조체
-struct FActivateAbilityByTagTaskMemory
-{
-	// 현재 보간 목표 위치
-	FVector CurrentWarpLocation;
-
-	// 초기화 확인 플래그
-	bool bIsInitialized;
-};
-
 UCLASS()
 class PROJECTA_API UBTTask_ActivateAbilityByTag : public UBTTaskNode
 {
@@ -36,9 +26,6 @@ private:
 
 	// 회전 워프 타겟을 가져오는 함수
 	FVector GetRotationWarpTarget();
-
-	// 인스턴스의 메모리를 반환하는 함수
-	virtual uint16 GetInstanceMemorySize() const override;
 
 	// 태스크 종료 함수
 	void FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded);
@@ -63,10 +50,6 @@ private:
 	// 모션 워핑 애니메이션 사용 여부
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")
 	bool bUseMotionWarping;
-
-	// 모션 워핑 애니메이션 속도
-	UPROPERTY(EditAnywhere, Category = "Custom | Task", meta = (EditCondition = "bUseMotionWarping"))
-	float bMotionWarpingSpeed;
 
 	// 공격 중 피해를 받았을 때 공격이 중단될 수 있는지 여부
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")

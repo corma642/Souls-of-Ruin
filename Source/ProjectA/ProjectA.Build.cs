@@ -22,6 +22,7 @@ public class ProjectA : ModuleRules
             "Niagara",
             "UMG",
             "AIModule",
+            "NavigationSystem",
         });
     }
 }

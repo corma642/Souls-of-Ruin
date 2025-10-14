@@ -138,25 +138,34 @@ void UPA_GameplayAbility::ApplyEffectSpecHandleToActors(const TArray<AActor*>& I
 		if (APawn* HitPawn = Cast<APawn>(HitActor))
 		{
 			// 공격자와 피해자가 서로 적대적인지 확인
-			if (UPA_FunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
+			if (!UPA_FunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
 			{
-				// 피해자에게 이펙트 적용
-				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(HitPawn, InSpecHandle);
+				continue;
+			}
 
-				// 이펙트 적용에 성공했으면, 피해자에게 피격 액션 이벤트 태그 전달
-				if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
-				{
-					// 이벤트 데이터 생성
-					FGameplayEventData Payload;
-					Payload.Instigator = OwningPawn;
-					Payload.Target = HitPawn;
+			// 무적 여부 확인
+			bool bIsInvincible = UPA_FunctionLibrary::NativeIsInvincible(HitActor);
+			if (bIsInvincible)
+			{
+				continue;
+			}
 
-					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-						HitPawn,
-						PA_GameplayTags::Shared_Event_HitReact,
-						Payload
-					);
-				}
+			// 피해자에게 이펙트 적용
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(HitPawn, InSpecHandle);
+
+			// 이펙트 적용에 성공했으면, 피해자에게 피격 액션 이벤트 태그 전달
+			if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
+			{
+				// 이벤트 데이터 생성
+				FGameplayEventData Payload;
+				Payload.Instigator = OwningPawn;
+				Payload.Target = HitPawn;
+
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+					HitPawn,
+					PA_GameplayTags::Shared_Event_HitReact,
+					Payload
+				);
 			}
 		}
 	}
