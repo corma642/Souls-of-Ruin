@@ -75,4 +75,8 @@ protected:
 	// 발사체 대미지 이펙트 스펙 핸들
 	UPROPERTY(BlueprintReadOnly, Category = "Projectile", meta = (ExposeOnSpawn = "true"))
 	FGameplayEffectSpecHandle ProjectileDamegeEffectSpecHandle;
+
+private:
+	// 발사체에 오버랩된 액터 배열
+	TArray<AActor*> OverlapActors;
 };

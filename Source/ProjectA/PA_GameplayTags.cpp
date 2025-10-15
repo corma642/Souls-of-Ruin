@@ -50,6 +50,7 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_SuccessfulBlock, "Player.Event.SuccessfulBlock");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ChangeLockOnTarget_Left, "Player.Event.ChangeLockOnTarget.Left");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ChangeLockOnTarget_Right, "Player.Event.ChangeLockOnTarget.Right");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Event_ActivateAwake, "Player.Event.ActivateAwake");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_DualWield, "Player.Weapon.DualWield");
 
@@ -58,6 +59,10 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Rolling, "Player.Status.Rolling");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Blocking, "Player.Status.Blocking");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_TargetLockOn, "Player.Status.TargetLockOn");
+
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Awake_Active, "Player.Status.Awake.Active");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Awake_Activating, "Player.Status.Awake.Activating");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Awake_None, "Player.Status.Awake.None");
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_1, "Player.Cooldown.Skill_1");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_Skill_2, "Player.Cooldown.Skill_2");
@@ -93,6 +98,8 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_HitReact, "Shared.Event.HitReact");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_DrawDamageNumber, "Shared.Event.DrawDamageNumber");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile, "Shared.Event.SpawnProjectile");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile_Left, "Shared.Event.SpawnProjectile.Left");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile_Right, "Shared.Event.SpawnProjectile.Right");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_ThrowProjectile, "Shared.Event.ThrowProjectile");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Evnet_InTransmission, "Shared.Event.InTransmission");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Evnet_OutTransmission, "Shared.Event.OutTransmission");
