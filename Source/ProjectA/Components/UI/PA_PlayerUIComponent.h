@@ -15,11 +15,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
 );
 
 // 무기 스킬 쿨타임 시작 델리게이트
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
 	FOnWeaponSkillCooldownBeginDelegate, 
 	FGameplayTag, AbilityInputTag,	// 어빌리티 입력 태그
-	float, TotalCooldownTime,		// 총 재사용 대기 시간
-	float, RemainingCooldownTime	// 남은 재사용 대기 시간
+	float, TotalCooldownTime		// 총 재사용 대기 시간
 );
 
 UCLASS()

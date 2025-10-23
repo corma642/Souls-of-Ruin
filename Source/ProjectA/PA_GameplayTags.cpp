@@ -101,8 +101,6 @@ namespace PA_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile_Left, "Shared.Event.SpawnProjectile.Left");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_SpawnProjectile_Right, "Shared.Event.SpawnProjectile.Right");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_ThrowProjectile, "Shared.Event.ThrowProjectile");
-	UE_DEFINE_GAMEPLAY_TAG(Shared_Evnet_InTransmission, "Shared.Event.InTransmission");
-	UE_DEFINE_GAMEPLAY_TAG(Shared_Evnet_OutTransmission, "Shared.Event.OutTransmission");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Dead, "Shared.Status.Dead");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Invincible, "Shared.Status.Invincible");

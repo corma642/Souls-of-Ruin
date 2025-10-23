@@ -68,6 +68,9 @@ APA_CharacterEnemy::APA_CharacterEnemy()
 
 	// 최대 이동속도 변경 콜백 함수 바인딩
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterEnemy::OnMaxMovementSpeedChanged);
+
+	// Enemy 태그 추가
+	Tags.AddUnique(TEXT("Enemy"));
 }
 
 void APA_CharacterEnemy::OnHandCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

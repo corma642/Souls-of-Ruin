@@ -39,6 +39,9 @@ APA_BaseWeapon::APA_BaseWeapon()
 	RightWeaponCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RightWeaponCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnRightCollisionBoxBeginOverlap);
 	RightWeaponCollisionBox->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnRightCollisionBoxEndOverlap);
+
+	// Weapon 태그 추가
+	Tags.AddUnique(TEXT("Weapon"));
 }
 
 // 왼쪽 콜리전
@@ -52,6 +55,7 @@ void APA_BaseWeapon::OnLeftCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
+			// 피격 지점 얻기
 			FHitResult AttackHit = UPA_FunctionLibrary::GetAttackHitResult(this, OtherActor);
 
 			// 상호작용 시작 이벤트 호출
@@ -88,6 +92,7 @@ void APA_BaseWeapon::OnRightCollisionBoxBeginOverlap(UPrimitiveComponent* Overla
 		// 오버랩된 대상이 적대적인 경우
 		if (UPA_FunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
+			// 피격 지점 얻기
 			FHitResult AttackHit = UPA_FunctionLibrary::GetAttackHitResult(this, OtherActor);
 
 			// 상호작용 시작 이벤트 호출

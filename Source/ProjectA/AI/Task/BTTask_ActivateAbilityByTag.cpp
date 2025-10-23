@@ -7,8 +7,14 @@
 #include "AbilitySystem/PA_AbilitySystemComponent.h"
 #include "AIController.h"
 #include "MotionWarpingComponent.h"
-#include "PA_FunctionLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Animation/AnimInstance.h"
 
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+#include "PA_FunctionLibrary.h"
 #include "PA_GameplayTags.h"
 
 UBTTask_ActivateAbilityByTag::UBTTask_ActivateAbilityByTag()
@@ -22,38 +28,44 @@ UBTTask_ActivateAbilityByTag::UBTTask_ActivateAbilityByTag()
 	// 블랙보드 키 필터 설정
 	TargetActorKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(ThisClass, TargetActorKey), AActor::StaticClass());
 
+	GroundObjectTypes.AddUnique(TEnumAsByte<EObjectTypeQuery>(ECollisionChannel::ECC_WorldStatic));
+	GroundObjectTypes.AddUnique(TEnumAsByte<EObjectTypeQuery>(ECollisionChannel::ECC_WorldDynamic));
+
+	CollisionChannelToIgnore.AddUnique(ECollisionChannel::ECC_Pawn);
+
 	bNotifyTick = true;				// 태스크 알림 허용
 	bNotifyTaskFinished = true;		// 태스크 완료 알림 허용
 	bCreateNodeInstance = false;	// 태스크의 인스턴스화 비활성화
 
 	bUseMotionWarping = false;
+	bUseZAxisRootMotion = false;
 	bIsCanStopAttack = true;
 }
 
 EBTNodeResult::Type UBTTask_ActivateAbilityByTag::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// 공격 중 상태 키를 true로 설정
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsAttackingKey.SelectedKeyName, true);
-
-	// AI 캐릭터 가져오기
+	// AI 캐릭터 및 공격 대상 가져오기
 	AICharacter = Cast<APA_CharacterEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!AICharacter)
+	TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
+	if (!AICharacter || !TargetActor)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	// 공격 대상 가져오기
-	TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
-	if (!TargetActor)
+	// 공격 중 상태 키를 true로 설정
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsAttackingKey.SelectedKeyName, true);
+
+	// Z축 루트 모션 이동이 있는 경우
+	if (bUseZAxisRootMotion)
 	{
-		return EBTNodeResult::Failed;
+		// 콜리전 및 무브먼트 컴포넌트 상태 변경
+		SetUpMotionWarpingState();
 	}
 
 	// 적 공격 어빌리티 활성화
 	Cast<UPA_AbilitySystemComponent>(AICharacter->GetAbilitySystemComponent())->TryActivateAbilityByTag(AbilityTagToActivate);
 
 	return EBTNodeResult::InProgress; // 태스크 진행중으로 종료
-	// TickTask 함수에서 이후 처리
 }
 
 void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -62,15 +74,16 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	if (!AICharacter || !TargetActor)
 	{
 		FinishTask(OwnerComp, false);
+		return;
 	}
 
-	// 공격 중 피해를 받았을 때 공격이 중단될 수 있는 경우
+	// 공격 중 피해를 받았을 때 공격이 중단될 수 있는 경우 태스크를 실패로 종료
 	if (bIsCanStopAttack)
 	{
-		// 공격받으면 태스크를 실패로 종료
 		if (UPA_FunctionLibrary::NativeDoesActorHaveTag(AICharacter, PA_GameplayTags::Enemy_Status_UnderAttack))
 		{
 			FinishTask(OwnerComp, false);
+			return;
 		}
 	}
 
@@ -101,51 +114,105 @@ void UBTTask_ActivateAbilityByTag::TickTask(UBehaviorTreeComponent& OwnerComp, u
 			UMotionWarpingComponent* MotionWarpingComponent = AICharacter->GetMotionWarpingComponent();
 			if (MotionWarpingComponent)
 			{
-				// #1: 최종 목표 위치 계산
-				const FVector FinalTargetLocation = GetLocationWarpTarget();
+				// #1: 목표 위치 계산
+				FVector FinalTargetLocation = FVector::ZeroVector;
+				if (FVector::Dist(AICharacter->GetActorLocation(), TargetActor->GetActorLocation()) <= WarpTargetDistance)
+				{
+					FinalTargetLocation = AICharacter->GetActorLocation();
+				}
+				else
+				{
+					// 타깃 위치로부터 일정 거리 떨어지도록 보정(겹침 방지)
+					FinalTargetLocation = TargetActor->GetActorLocation() - (AICharacter->GetActorForwardVector() * WarpTargetDistance);
+				}
 
-				// #2: 최종 목표 위치 업데이트
+				// #2: 목표 위치 업데이트
 				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
 					"LocationTarget",
 					FinalTargetLocation
 				);
 
 				// #3: 공격 모션 워핑 회전 업데이트
-				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocation(
-					"RotationTarget",
-					GetRotationWarpTarget()
+				AICharacter->GetMotionWarpingComponent()->AddOrUpdateWarpTargetFromLocationAndRotation(
+					TEXT("RotationTarget"),
+					TargetActor->GetActorLocation(),
+					UKismetMathLibrary::MakeRotFromX((TargetActor->GetActorLocation() - AICharacter->GetActorLocation()).GetSafeNormal())
 				);
 			}
 		}
 	}
 }
 
-FVector UBTTask_ActivateAbilityByTag::GetLocationWarpTarget()
-{
-	if (TargetActor == nullptr) return FVector();
-
-	const FVector Location = AICharacter->GetActorLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
-
-	// 목표 위치로의 방향을 구함
-	FVector TargetToMe = (Location - TargetLocation).GetSafeNormal();
-
-	// 목표 위치로의 방향에 떨어질 거리를 곱해서 목표 위치로부터의 떨어진 거리를 구함
-	TargetToMe *= WarpTargetDistance;
-
-	// 목표 위치에 내 방향으로부터 떨어질 거리를 더한 위치를 반환
-	return TargetLocation + TargetToMe;
-}
-
-FVector UBTTask_ActivateAbilityByTag::GetRotationWarpTarget()
-{
-	return TargetActor->GetActorLocation();
-}
-
 void UBTTask_ActivateAbilityByTag::FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded)
 {
+	// Z축 루트 모션 이동이 있는 경우
+	if (bUseZAxisRootMotion)
+	{
+		// 콜리전 및 무브먼트 컴포넌트 상태 변경 복구
+		UnSetUpMotionWarpingState();
+	}
+
 	// 공격 중 상태를 false로 설정
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(IsAttackingKey.SelectedKeyName, false);
 
 	bIsSucceeded ? FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded) : FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+}
+
+void UBTTask_ActivateAbilityByTag::SetUpMotionWarpingState()
+{
+	if (!AICharacter)
+	{
+		return;
+	}
+
+	// 캐릭터의 움직임 상태를 나는 상태로 변경
+	// Root Motion의 Z축 움직임을 활성화하기 위함
+	UCharacterMovementComponent* CharacterMovement = AICharacter->GetCharacterMovement();
+	if (CharacterMovement)
+	{
+		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
+	}
+
+	// 충돌을 무시할 콜리전 채널을 모두 Ignore로 설정
+	UCapsuleComponent* CapsuleComponent = AICharacter->GetCapsuleComponent();
+	if (CapsuleComponent)
+	{
+		for (auto Channel : CollisionChannelToIgnore)
+		{
+			// 변경한 콜리전 채널 저장 (복구용)
+			ChangedCollisionChannel.Add(Channel, CapsuleComponent->GetCollisionResponseToChannel(Channel));
+
+			// 콜리전 채널 변경
+			CapsuleComponent->SetCollisionResponseToChannel(Channel, ECollisionResponse::ECR_Ignore);
+		}
+	}
+}
+
+void UBTTask_ActivateAbilityByTag::UnSetUpMotionWarpingState()
+{
+	if (!AICharacter)
+	{
+		ChangedCollisionChannel.Reset();
+		return;
+	}
+
+	// 캐릭터의 움직임 상태를 추락 상태로 변경
+	UCharacterMovementComponent* CharacterMovement = AICharacter->GetCharacterMovement();
+	if (CharacterMovement && CharacterMovement->IsFlying())
+	{
+		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Falling);
+	}
+
+	// 충돌을 무시했던 콜리전 채널을 모두 복구
+	UCapsuleComponent* CapsuleComponent = AICharacter->GetCapsuleComponent();
+	if (CapsuleComponent)
+	{
+		for (auto Channel : ChangedCollisionChannel)
+		{
+			// 콜리전 채널 복구
+			CapsuleComponent->SetCollisionResponseToChannel(Channel.Key, Channel.Value);
+		}
+	}
+
+	ChangedCollisionChannel.Reset();
 }

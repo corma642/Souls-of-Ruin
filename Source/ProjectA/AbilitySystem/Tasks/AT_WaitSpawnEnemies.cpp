@@ -12,7 +12,14 @@ UAT_WaitSpawnEnemies::UAT_WaitSpawnEnemies()
 	bTickingTask = false;
 }
 
-UAT_WaitSpawnEnemies* UAT_WaitSpawnEnemies::WaitSpawnEnemies(UGameplayAbility* OwningAbility, FGameplayTag EventTag, TArray<TSoftClassPtr<class APA_CharacterEnemy>> SoftEnemyClassToSpawn, const int32 NumToSpawn, const float MinSpawnRadius, const float MaxSpawnRadius)
+UAT_WaitSpawnEnemies* UAT_WaitSpawnEnemies::WaitSpawnEnemies(
+	UGameplayAbility* OwningAbility,
+	FGameplayTag EventTag,
+	TArray<TSoftClassPtr<class APA_CharacterEnemy>> SoftEnemyClassToSpawn,
+	const int32 NumToSpawn,
+	const float MinSpawnExtent,
+	const float MaxSpawnExtent
+)
 {
 	// 태스크 객체 생성, 생성된 태스크를 관리할 Owner 어빌리티 설정
 	UAT_WaitSpawnEnemies* Node = NewAbilityTask<UAT_WaitSpawnEnemies>(OwningAbility);
@@ -21,8 +28,8 @@ UAT_WaitSpawnEnemies* UAT_WaitSpawnEnemies::WaitSpawnEnemies(UGameplayAbility* O
 	Node->CachedEventTag = EventTag;
 	Node->CachedSoftEnemyClassToSpawn = SoftEnemyClassToSpawn;
 	Node->CachedNumToSpawn = NumToSpawn;
-	Node->CachedMinSpawnRadius = MinSpawnRadius;
-	Node->CachedMaxSpawnRadius = MaxSpawnRadius;
+	Node->CachedMinSpawnExtent = MinSpawnExtent;
+	Node->CachedMaxSpawnExtent = MaxSpawnExtent;
 
 	return Node;
 }
@@ -100,6 +107,47 @@ void UAT_WaitSpawnEnemies::OnGameplayEventReceived(const FGameplayEventData* InP
 	}
 }
 
+// 원형 기반
+//FVector UAT_WaitSpawnEnemies::GetSpawnLocationInRandRange()
+//{
+//	FVector RetLocation = FVector::ZeroVector;
+//
+//	// 소환자 액터 가져오기
+//	AActor* Avatar = AbilitySystemComponent.IsValid() ? AbilitySystemComponent->GetAvatarActor() : nullptr;
+//	if (!Avatar)
+//	{
+//		return RetLocation;
+//	}
+//
+//	// #1: 기준 위치 구하기
+//	const FVector OwnerLocation = Avatar->GetActorLocation();
+//
+//	// #2: 소환 각도 구하기
+//	const float RandomAngle = FMath::FRandRange(0.f, 2.f * PI);
+//
+//	// #3: 소환 가능 범위 면적 구하기
+//	const float MinRange = FMath::Max(0.f, CachedMinSpawnRadius);
+//	const float MaxRange = FMath::Max(MinRange, CachedMaxSpawnRadius);
+//	const float Range = FMath::FRand();
+//	const float RandomRadius = FMath::Sqrt(Range * (MaxRange * MaxRange - MinRange * MinRange) + MinRange * MinRange);
+//
+//	// #4: 로컬 오프셋 구하기 (XY 평면)
+//	const float CosA = FMath::Cos(RandomAngle);
+//	const float SinA = FMath::Sin(RandomAngle);
+//	FVector LocalOffset(RandomRadius * CosA, RandomRadius * SinA, 0.f);
+//
+//	// #5: 회전값 구하기 (회전은 Yaw만 반영)
+//	const float Yaw = Avatar->GetActorRotation().Yaw;
+//	const FRotator YawRot(0.f, Yaw, 0.f);
+//	const FVector WorldOffset = YawRot.RotateVector(LocalOffset);
+//
+//	// #6: 결과 위치 + 바닥에 끼임 방지를 위한 임시 Z값 보정
+//	RetLocation = OwnerLocation + WorldOffset;
+//	RetLocation.Z += 150.f;
+//
+//	return RetLocation;
+//}
+
 FVector UAT_WaitSpawnEnemies::GetSpawnLocationInRandRange()
 {
 	FVector RetLocation = FVector::ZeroVector;
@@ -111,30 +159,25 @@ FVector UAT_WaitSpawnEnemies::GetSpawnLocationInRandRange()
 		return RetLocation;
 	}
 
-	// #1: 기준 위치 구하기
-	const FVector OwnerLocation = Avatar->GetActorLocation();
+	// #1: 기준 위치(소환자 위치) 및 회전 구하기
+	const FVector OriginLocation = Avatar->GetActorLocation();
+	const FRotator YawRot(0.f, Avatar->GetActorRotation().Yaw, 0.f);
 
-	// #2: 소환 각도 구하기
-	const float RandomAngle = FMath::FRandRange(0.f, 2.f * PI);
+	// #2: 소환 가능 범위 계산
+	const float MinExtent = FMath::Max(0.f, CachedMinSpawnExtent);
+	const float MaxExtent = FMath::Max(MinExtent, CachedMaxSpawnExtent);
 
-	// #3: 소환 가능 범위 면적 구하기
-	const float MinRange = FMath::Max(0.f, CachedMinSpawnRadius);
-	const float MaxRange = FMath::Max(MinRange, CachedMaxSpawnRadius);
-	const float Range = FMath::FRand();
-	const float RandomRadius = FMath::Sqrt(Range * (MaxRange * MaxRange - MinRange * MinRange) + MinRange * MinRange);
+	// #3: 로컬 좌표계에서 박스 내 무작위 오프셋 계산
+	// X, Y 각각 독립적으로 MinExtent와 MaxExtent 사이에서 무작위 값 선택
+	const float RandomX = FMath::FRandRange(MinExtent, MaxExtent) * (FMath::RandBool() ? 1.f : -1.f);
+	const float RandomY = FMath::FRandRange(MinExtent, MaxExtent) * (FMath::RandBool() ? 1.f : -1.f);
+	FVector LocalOffset(RandomX, RandomY, 0.f);
 
-	// #4: 로컬 오프셋 구하기 (XY 평면)
-	const float CosA = FMath::Cos(RandomAngle);
-	const float SinA = FMath::Sin(RandomAngle);
-	FVector LocalOffset(RandomRadius * CosA, RandomRadius * SinA, 0.f);
-
-	// #5: 회전값 구하기 (회전은 Yaw만 반영)
-	const float Yaw = Avatar->GetActorRotation().Yaw;
-	const FRotator YawRot(0.f, Yaw, 0.f);
+	// #4: 월드 좌표계로 변환 (Yaw 회전 적용)
 	const FVector WorldOffset = YawRot.RotateVector(LocalOffset);
 
-	// #6: 결과 위치 + 바닥에 끼임 방지를 위한 임시 Z값 보정
-	RetLocation = OwnerLocation + WorldOffset;
+	// #5: 결과 위치 계산 + 바닥 끼임 방지를 위한 Z 보정
+	RetLocation = OriginLocation + WorldOffset;
 	RetLocation.Z += 150.f;
 
 	return RetLocation;

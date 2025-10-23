@@ -10,25 +10,22 @@ UCLASS()
 class PROJECTA_API UBTTask_ActivateAbilityByTag : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 public:
 	UBTTask_ActivateAbilityByTag();
 
-	// Task 실행 함수
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
-	// Task 틱 함수
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 private:
-	// 위치 워프 타겟을 가져오는 함수
-	FVector GetLocationWarpTarget();
-
-	// 회전 워프 타겟을 가져오는 함수
-	FVector GetRotationWarpTarget();
-
 	// 태스크 종료 함수
 	void FinishTask(UBehaviorTreeComponent& OwnerComp, bool bIsSucceeded);
+
+	// 콜리전 및 무브먼트 컴포넌트 상태 변경 함수
+	void SetUpMotionWarpingState();
+
+	// 콜리전 및 무브먼트 컴포넌트 상태 변경 복구 함수
+	void UnSetUpMotionWarpingState();
 
 private:
 	// 활성화할 어빌리티 태그
@@ -51,13 +48,28 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")
 	bool bUseMotionWarping;
 
+	// Z축 루트 모션 이동이 있는지 여부
+	UPROPERTY(EditAnywhere, Category = "Custom | Task", meta = (EditCondition = "bUseMotionWarping"))
+	bool bUseZAxisRootMotion;
+
 	// 공격 중 피해를 받았을 때 공격이 중단될 수 있는지 여부
 	UPROPERTY(EditAnywhere, Category = "Custom | Task")
 	bool bIsCanStopAttack;
+
+	// 무시할 콜리전 채널
+	UPROPERTY(EditAnywhere, Category = "Custom | Task")
+	TArray<TEnumAsByte<ECollisionChannel>> CollisionChannelToIgnore;
 
 	// 캐릭터 캐시
 	class APA_CharacterEnemy* AICharacter = nullptr;
 
 	// 공격 대상 캐시
 	class AActor* TargetActor = nullptr;
+
+private:
+	// 변경한 콜리전 채널
+	TMap<TEnumAsByte<ECollisionChannel>, ECollisionResponse> ChangedCollisionChannel;
+
+	// 바닥(착지 가능) 오브젝트 타입
+	TArray<TEnumAsByte<EObjectTypeQuery>> GroundObjectTypes;
 };

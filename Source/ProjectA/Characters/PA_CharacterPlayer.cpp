@@ -68,6 +68,9 @@ APA_CharacterPlayer::APA_CharacterPlayer()
 
 	// 최대 이동속도 변경 콜백 함수 바인딩
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxMovementSpeedAttribute()).AddUObject(this, &APA_CharacterPlayer::OnMaxMovementSpeedChanged);
+
+	// Player 태그 추가
+	Tags.AddUnique(TEXT("Player"));
 }
 
 UPA_PawnCombatComponent* APA_CharacterPlayer::GetPawnCombatComponent() const

@@ -12,7 +12,7 @@ public class ProjectA : ModuleRules
 
         PublicIncludePaths.Add("ProjectA");
 
-        PrivateDependencyModuleNames.AddRange(new string[]
+        PublicDependencyModuleNames.AddRange(new string[]
         {
             "GameplayAbilities",
             "GameplayTags",
@@ -23,6 +23,9 @@ public class ProjectA : ModuleRules
             "UMG",
             "AIModule",
             "NavigationSystem",
+            "MovieScene",
+            "MovieSceneTracks",
+            "LevelSequence",
         });
     }
 }

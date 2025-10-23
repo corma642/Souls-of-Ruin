@@ -30,16 +30,16 @@ public:
 	* EventTag				: 이벤트 태그
 	* SoftEnemyClassToSpawn	: 소환할 적 클래스(약 참조) 배열
 	* NumToSpawn			: 소환할 적의 수
-	* MinSpawnRadius		: 최소 소환 범위
-	* MaxSpawnRadius		: 최대 소환 범위
+	* MinSpawnExtent		: 최소 소환 범위
+	* MaxSpawnExtent		: 최대 소환 범위
 	*/
 	static UAT_WaitSpawnEnemies* WaitSpawnEnemies(
 		UGameplayAbility* OwningAbility,
 		FGameplayTag EventTag,
 		TArray<TSoftClassPtr<class APA_CharacterEnemy>> SoftEnemyClassToSpawn,
 		const int32 NumToSpawn,
-		const float MinSpawnRadius,
-		const float MaxSpawnRadius
+		const float MinSpawnExtent,
+		const float MaxSpawnExtent
 	);
 
 	// 태스크 트리거 시 호출되는 함수
@@ -78,6 +78,6 @@ private:
 	FGameplayTag CachedEventTag;
 	TArray<TSoftClassPtr<class APA_CharacterEnemy>> CachedSoftEnemyClassToSpawn;
 	int32 CachedNumToSpawn;
-	float CachedMinSpawnRadius;
-	float CachedMaxSpawnRadius;
+	float CachedMinSpawnExtent;
+	float CachedMaxSpawnExtent;
 };

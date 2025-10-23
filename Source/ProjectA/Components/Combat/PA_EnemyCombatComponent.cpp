@@ -46,15 +46,11 @@ void UPA_EnemyCombatComponent::OnWeaponHitStartTargetActor(AActor* HitActor, con
 	// 막기 성공
 	if (bIsValidBlock)
 	{
-		GEngine->AddOnScreenDebugMessage(5, 3.f, FColor::Green, FString("Successed Block!!"));
-
 		// 막기 성공. 피격 액터에게 막기 성공 이벤트 전달
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, PA_GameplayTags::Player_Event_SuccessfulBlock, Payload);
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(5, 3.f, FColor::Red, FString("Failed Block!!"));
-
 		// 막기 실패. 피해 이벤트 전달
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner<APawn>(), PA_GameplayTags::Shared_Event_MeleeHit, Payload);
 	}

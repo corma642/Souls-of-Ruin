@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Abilities/Player/GA_Player_MotionWarping.h"
 #include "Characters/PA_CharacterPlayer.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "MotionWarpingComponent.h"
 
@@ -13,14 +15,37 @@ UGA_Player_MotionWarping::UGA_Player_MotionWarping()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	bUseMotionWarping = true;
+
+	GroundObjectTypes.AddUnique(TEnumAsByte<EObjectTypeQuery>(ECollisionChannel::ECC_WorldStatic));
+	GroundObjectTypes.AddUnique(TEnumAsByte<EObjectTypeQuery>(ECollisionChannel::ECC_WorldDynamic));
+	GroundObjectTypes.AddUnique(TEnumAsByte<EObjectTypeQuery>(ECollisionChannel::ECC_Pawn));
+
+	CollisionChannelToIgnore.AddUnique(ECollisionChannel::ECC_Pawn);
 }
 
 void UGA_Player_MotionWarping::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	// 콜리전 및 무브먼트 컴포넌트 상태 변경
+	SetUpMotionWarpingState();
+
 	// 몽타주 재생 함수 호출
 	MontageToPlay();
+}
+
+void UGA_Player_MotionWarping::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	// 태스크 종료
+	if (IsValid(MontageTask))
+	{
+		MontageTask->EndTask();
+	}
+
+	// 콜리전 및 무브먼트 컴포넌트 상태 변경 복구
+	UnSetUpMotionWarpingState();
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_Player_MotionWarping::MontageToPlay()
@@ -58,7 +83,7 @@ void UGA_Player_MotionWarping::ComputeDirectionAndDistance()
 		UKismetMathLibrary::MakeRotFromX(Direction)
 	);
 
-	// 플레이어 전방으로 모션 워핑 이동 거리만큼 트레이싱 수행
+	// 플레이어 전방으로 이동 거리만큼 트레이싱 수행
 	FHitResult HitResult;
 
 	FVector TraceStart = GetPlayerCharacterFromActorInfo()->GetActorLocation();
@@ -82,10 +107,7 @@ void UGA_Player_MotionWarping::ComputeDirectionAndDistance()
 	// 이동 거리에 충돌체가 있다면 해당 위치로 이동 위치 업데이트
 	if (HitResult.bBlockingHit)
 	{
-		// 충돌 지점에서 살짝 물러나도록 오프셋 조정
-		const float DistanceOffset = 10.f;
-
-		// ImpactPoint에서 캐릭터 방향의 역방향으로 Offset을 적용
+		// ImpactPoint에서 캐릭터 방향의 역방향으로 Offset을 적용 (겹침 방지)
 		FinalTargetLocation = HitResult.ImpactPoint - (Direction * DistanceOffset);
 	}
 	// 이동 거리에 충돌체가 없는 경우
@@ -127,4 +149,65 @@ void UGA_Player_MotionWarping::ComputeDirectionAndDistance()
 		TEXT("LocationTarget"),
 		FinalTargetLocation
 	);
+}
+
+void UGA_Player_MotionWarping::SetUpMotionWarpingState()
+{
+	ACharacter* Character = Cast<ACharacter>(CurrentActorInfo->AvatarActor);
+	if (!Character)
+	{
+		return;
+	}
+
+	// 캐릭터의 움직임 상태를 나는 상태로 변경
+	// Root Motion의 Z축 움직임을 활성화하기 위함
+	UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement();
+	if (CharacterMovement)
+	{
+		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
+	}
+
+	// 충돌을 무시할 콜리전 채널을 모두 Ignore로 설정
+	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+	if (CapsuleComponent)
+	{
+		for (auto Channel : CollisionChannelToIgnore)
+		{
+			// 변경한 콜리전 채널 저장 (복구용)
+			ChangedCollisionChannel.Add(Channel, CapsuleComponent->GetCollisionResponseToChannel(Channel));
+
+			// 콜리전 채널 변경
+			CapsuleComponent->SetCollisionResponseToChannel(Channel, ECollisionResponse::ECR_Ignore);
+		}
+	}
+}
+
+void UGA_Player_MotionWarping::UnSetUpMotionWarpingState()
+{
+	ACharacter* Character = Cast<ACharacter>(CurrentActorInfo->AvatarActor);
+	if (!Character)
+	{
+		ChangedCollisionChannel.Reset();
+		return;
+	}
+
+	// 캐릭터의 움직임 상태를 추락 상태로 변경
+	UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement();
+	if (CharacterMovement && CharacterMovement->IsFlying())
+	{
+		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Falling);
+	}
+
+	// 충돌을 무시했던 콜리전 채널을 모두 복구
+	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+	if (CapsuleComponent)
+	{
+		for (auto Channel : ChangedCollisionChannel)
+		{
+			// 콜리전 채널 복구
+			CapsuleComponent->SetCollisionResponseToChannel(Channel.Key, Channel.Value);
+		}
+	}
+
+	ChangedCollisionChannel.Reset();
 }

@@ -150,6 +150,13 @@ void UPA_GameplayAbility::ApplyEffectSpecHandleToActors(const TArray<AActor*>& I
 				continue;
 			}
 
+			// 사망 여부 확인
+			bool bIsDead = UPA_FunctionLibrary::NativeDoesActorHaveTag(HitActor, PA_GameplayTags::Shared_Status_Dead);
+			if (bIsDead)
+			{
+				continue;
+			}
+
 			// 피해자에게 이펙트 적용
 			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(HitPawn, InSpecHandle);
 

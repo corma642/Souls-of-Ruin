@@ -10,7 +10,10 @@
 
 UPA_PawnCombatComponent* UPA_FunctionLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
 {
-	check(InActor);
+	if (!InActor)
+	{
+		return nullptr;
+	}
 
 	if (IPA_PawnCombatInterface* PawnCombatInterface = Cast<IPA_PawnCombatInterface>(InActor))
 	{
@@ -21,14 +24,25 @@ UPA_PawnCombatComponent* UPA_FunctionLibrary::NativeGetPawnCombatComponentFromAc
 
 UPA_AbilitySystemComponent* UPA_FunctionLibrary::NativeGetPAAbilitySystemComponentFromActor(AActor* InActor)
 {
-	check(InActor);
-	return Cast<UPA_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
+	if (!InActor)
+	{
+		return nullptr;
+	}
+
+	if (UPA_AbilitySystemComponent* ASC = Cast<UPA_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor)))
+	{
+		return ASC;
+	}
+	return nullptr;
 }
 
 bool UPA_FunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck)
 {
-	UPA_AbilitySystemComponent* ASC = NativeGetPAAbilitySystemComponentFromActor(InActor);
-	return ASC->HasMatchingGameplayTag(TagToCheck);
+	if (UPA_AbilitySystemComponent* ASC = NativeGetPAAbilitySystemComponentFromActor(InActor))
+	{
+		return ASC->HasMatchingGameplayTag(TagToCheck);
+	}
+	return false;
 }
 
 bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVictim)
@@ -56,7 +70,10 @@ bool UPA_FunctionLibrary::NativeIsValidBlock(AActor* InAttacker, AActor* InVicti
 
 bool UPA_FunctionLibrary::NativeIsInvincible(AActor* InActor)
 {
-	if (!InActor) return false;
+	if (!InActor)
+	{
+		return false;
+	}
 
 	// 액터의 무적 상태 태그 보유 여부를 반환
 	return NativeDoesActorHaveTag(InActor, PA_GameplayTags::Shared_Status_Invincible);
@@ -113,7 +130,7 @@ bool UPA_FunctionLibrary::IsTargetPawnHostile(const APawn* MyPawn, const APawn* 
 
 	if (MyPawnTeamAgent && TargetPawnTeamAgent)
 	{
-		// 두 폰의 일반 팀 ID의 동일 여부를 반환 ()
+		// 두 폰의 일반 팀 ID의 동일 여부를 반환
 		return MyPawnTeamAgent->GetGenericTeamId() != TargetPawnTeamAgent->GetGenericTeamId();
 	}
 
